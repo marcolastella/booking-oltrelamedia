@@ -572,6 +572,7 @@
             }
 
             allSlots.forEach(item => {
+                // Generazione nome file blindata
                 const cleanName = (item.info.guest || '').toLowerCase().replace(/[^a-z0-9]/g, '');
                 const cleanComp = (item.info.company || '').toLowerCase().replace(/[^a-z0-9]/g, '');
                 const filename = `${cleanName}_${cleanComp}`;
@@ -649,8 +650,15 @@
             allItems.forEach(item => {
                 const statusMap = { 'editing_queue': { label: 'DA MONTARE', class: 'status-queue' }, 'waiting': { label: 'IN ATTESA', class: 'status-waiting' }, 'ready': { label: 'PRONTO', class: 'status-ready' } };
                 const st = statusMap[item.info.status];
+                
+                // --- FIX COPY STRING ---
                 const strName = `${item.info.guest} - ${item.info.company || ''}`;
                 const strLower = `${item.info.guest}\n${item.info.job || ''}`;
+                
+                // Safe versions for onClick attribute (escape quotes)
+                const safeStrName = strName.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                const safeStrLower = strLower.replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, "\\n");
+
                 const div = document.createElement('div');
                 div.className = 'edit-item';
                 div.innerHTML = `
@@ -659,8 +667,8 @@
                         <div class="status-badge ${st.class}">${st.label}</div>
                     </div>
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                        <div class="copy-box" onclick="copyToClipboard('${strName.replace(/'/g, "\\'")}')">${strName}</div>
-                        <div class="copy-box" onclick="copyToClipboard('${strLower.replace(/'/g, "\\'").replace(/\n/g, "\\n")}')">${strLower.replace(/\n/g, '<br>')}</div>
+                        <div class="copy-box" onclick="copyToClipboard('${safeStrName}')">${strName}</div>
+                        <div class="copy-box" onclick="copyToClipboard('${safeStrLower}')">${strLower.replace(/\n/g, '<br>')}</div>
                     </div>
                     ${item.info.productionNotes ? `<div style="margin-top:10px; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; font-size:12px; color:#ccc;"><strong>Note di Regia:</strong> ${item.info.productionNotes}</div>` : ''}
                     ${window.SESSION.role === 'ADMIN' ? `
