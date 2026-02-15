@@ -95,8 +95,12 @@
             border: 1px solid transparent;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             white-space: nowrap;
+            position: relative;
+            overflow: hidden;
         }
         .btn:active { transform: scale(0.97); }
+        /* Ensure children don't block clicks if problematic, though buttons handle this naturally */
+        .btn > * { pointer-events: none; }
 
         .btn-primary {
             background: white;
@@ -200,16 +204,55 @@
             max-width: 440px;
             padding: 48px;
             background: rgba(15, 15, 18, 0.8);
+            /* Centering text content */
+            text-align: center;
         }
-        .brand-logo {
-            font-size: 36px;
+        
+        /* Modifica Logo */
+        .brand-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .brand-title {
+            font-size: 32px;
             font-weight: 800;
-            letter-spacing: -2px;
-            margin-bottom: 12px;
-            line-height: 0.9;
-            background: linear-gradient(to bottom right, #fff 30%, #666 100%);
+            letter-spacing: -1px;
+            color: #ffffff;
+            line-height: 1.1;
+            margin-bottom: 4px;
+        }
+        
+        .brand-subtitle-main {
+            font-size: 18px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            
+            /* Effetto Argento Cangiante */
+            background: linear-gradient(120deg, #666 0%, #bbb 25%, #fff 50%, #bbb 75%, #666 100%);
+            background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            transition: background-position 0.6s ease;
+        }
+        
+        .brand-subtitle-main:hover {
+            background-position: 200% center;
+            cursor: default;
+        }
+
+        /* Allineamento input a sinistra anche se il container è centrato */
+        .login-card .input-group, 
+        .login-card button {
+            text-align: left;
+        }
+        .login-card button {
+            display: flex;
+            justify-content: center;
         }
 
         /* --- DASHBOARD --- */
@@ -329,8 +372,11 @@
     <!-- VISTA LOGIN -->
     <div id="login-view" class="view active">
         <div class="glass-panel login-card">
-            <div class="brand-logo">PRODUCTION<br>SUITE</div>
-            <p style="color: var(--text-secondary); margin-bottom: 40px; font-size: 14px; font-weight: 400;">Piattaforma di gestione palinsesti e coordinamento regia.</p>
+            <div class="brand-container">
+                <div class="brand-title">Oltre la Media</div>
+                <div class="brand-subtitle-main">Production Suite</div>
+            </div>
+            <p style="color: var(--text-secondary); margin-bottom: 40px; font-size: 13px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.5px;">piattaforma di gestione registrazioni e montaggi audio-video</p>
             
             <form onsubmit="event.preventDefault(); handleLogin();">
                 <div class="input-group">
@@ -346,7 +392,7 @@
             <div id="login-msg" style="color: var(--danger); margin-top: 24px; font-size:13px; font-weight:600; text-align:center; min-height:20px;"></div>
             
             <div style="margin-top:48px; border-top:1px solid rgba(255,255,255,0.05); padding-top:24px; display:flex; justify-content:space-between; align-items:center;">
-                <div style="font-size:11px; color:var(--text-muted);">Build 3.0.2 Stable</div>
+                <div style="font-size:11px; color:var(--text-muted);">Build 3.0.6 Stable</div>
                 <div style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:8px;">
                     Status <span id="db-status" style="width:6px; height:6px; background:#444; border-radius:50%; display:inline-block; box-shadow:0 0 5px #444;"></span>
                 </div>
@@ -410,7 +456,10 @@
     <!-- VISTA SLOT -->
     <div id="slots-view" class="view">
         <header>
-            <button class="btn btn-secondary" onclick="goToDashboard()">← Dashboard</button>
+            <div style="display:flex; gap:12px; align-items:center;">
+                <button class="btn btn-secondary" onclick="goToDashboard()">← Dashboard</button>
+                <div id="slot-admin-actions" style="display:none; gap:8px;"></div>
+            </div>
             <div style="text-align:right;">
                 <div id="slot-date-title" style="font-weight:800; font-size:24px; color:white; letter-spacing:-0.5px;"></div>
                 <div id="slot-team-subtitle" style="font-size:14px; color: var(--primary); font-weight:600; margin-top:4px;"></div>
@@ -708,25 +757,31 @@
         function renderGrid() {
             const grid = document.getElementById('grid-dates');
             grid.innerHTML = '';
-            const yesterday = getLocalDateString(-1); 
+            // CAMBIATO: Usa '0' per Oggi invece di '-1' (ieri)
+            const today = getLocalDateString(0); 
             const myAllocations = window.DB.allocations.filter(a => {
+                if(a.archived) return false;
                 if (window.SESSION.role === 'ADMIN') return true;
                 return a.team === window.SESSION.user;
-            }).filter(a => a.date >= yesterday);
+            }).filter(a => a.date >= today); // Mostra solo da oggi in poi
             myAllocations.sort((a, b) => new Date(a.date) - new Date(b.date));
             
             if (myAllocations.length === 0) grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px; color:#555;">Nessuna disponibilità pianificata.</div>';
             
-            myAllocations.forEach(alloc => createCard(alloc, grid));
+            myAllocations.forEach(alloc => createCard(alloc, grid, 'dashboard'));
         }
 
-        function createCard(alloc, container) {
+        function createCard(alloc, container, type = 'dashboard') {
             const teamData = window.USERS[alloc.team] || { label: alloc.team, color: '#333' };
             const d = new Date(alloc.date);
             const month = d.toLocaleString('it-IT', { month: 'long' });
             const capMonth = month.charAt(0).toUpperCase() + month.slice(1);
             const dateStr = `${d.getDate()} ${capMonth} ${d.getFullYear()}`;
             
+            // Check if past date
+            const todayStr = getLocalDateString(0);
+            const isPast = alloc.date < todayStr;
+
             const card = document.createElement('div');
             card.className = `date-card`;
             card.style.setProperty('--team-color', teamData.color);
@@ -735,12 +790,26 @@
 
             let buttons = '';
             if(window.SESSION.role === 'ADMIN') {
-                buttons = `
-                    <div style="position:absolute; top:20px; right:20px; display:flex; gap:10px;">
-                        <button onclick="event.stopPropagation(); openEditAlloc('${alloc.id}')" style="background:transparent; border:none; color:#777; cursor:pointer; font-size:16px; transition:0.2s;" title="Modifica">✏️</button>
-                        <button onclick="event.stopPropagation(); deleteAlloc('${alloc.id}')" style="background:transparent; border:none; color:var(--danger); cursor:pointer; font-size:20px; transition:0.2s;" title="Elimina">&times;</button>
-                    </div>
-                `;
+                if(type === 'archive') {
+                    // ARCHIVE VIEW: Show Delete Button
+                    buttons = `
+                        <div style="position:absolute; top:20px; right:20px; display:flex; gap:10px; z-index: 20;">
+                            <button onclick="event.stopPropagation(); deleteAlloc('${alloc.id}')" style="background:rgba(239,68,68,0.2); border:1px solid rgba(239,68,68,0.4); color:#ffaaaa; cursor:pointer; font-size:11px; padding:4px 8px; border-radius:4px; font-weight:600;" title="Elimina Definitivamente">ELIMINA</button>
+                        </div>
+                    `;
+                } else {
+                    // DASHBOARD VIEW
+                    // Z-INDEX aggiunto al container dei bottoni
+                    buttons = `
+                        <div style="position:absolute; top:20px; right:20px; display:flex; gap:8px; z-index: 20;">
+                            <button onclick="event.stopPropagation(); openEditAlloc('${alloc.id}')" class="btn btn-secondary" style="height:32px; padding:0 12px; font-size:12px; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px);">✏️ Modifica</button>
+                            ${isPast ? 
+                                `<button onclick="event.stopPropagation(); archiveAlloc('${alloc.id}')" style="background:rgba(245,158,11,0.2); border:1px solid rgba(245,158,11,0.4); color:#fbbf24; cursor:pointer; font-size:11px; padding:4px 8px; border-radius:4px; font-weight:600;" title="Sposta in Archivio">ARCHIVIA</button>` : 
+                                `<button onclick="event.stopPropagation(); deleteAlloc('${alloc.id}')" class="btn btn-danger" style="height:32px; padding:0 12px; font-size:12px;">🗑 Elimina</button>`
+                            }
+                        </div>
+                    `;
+                }
             }
 
             const freeSlots = alloc.slots.filter(s => !s.booked).length;
@@ -817,6 +886,29 @@
                 const capMonth = month.charAt(0).toUpperCase() + month.slice(1);
                 document.getElementById('slot-date-title').innerText = `${d.getDate()} ${capMonth} ${d.getFullYear()}`;
                 document.getElementById('slot-team-subtitle').innerText = window.USERS[alloc.team]?.label || alloc.team;
+                
+                // --- NUOVA LOGICA BOTTONI HEADER ---
+                const actionsDiv = document.getElementById('slot-admin-actions');
+                if (window.SESSION.role === 'ADMIN') {
+                    actionsDiv.style.display = 'flex';
+                    const todayStr = getLocalDateString(0);
+                    const isPast = alloc.date < todayStr;
+                    
+                    let html = '';
+                    // Tasto Modifica sempre presente
+                    html += `<button class="btn btn-secondary" style="height:32px; font-size:12px; padding:0 12px;" onclick="openEditAlloc('${alloc.id}')">✏️ Modifica</button>`;
+                    
+                    // Tasto Elimina o Archivia
+                    if (isPast) {
+                         html += `<button class="btn btn-secondary" style="height:32px; font-size:12px; padding:0 12px; color:#fbbf24; border-color:rgba(245,158,11,0.4);" onclick="archiveAlloc('${alloc.id}'); goToDashboard();">📦 Archivia</button>`;
+                    } else {
+                         html += `<button class="btn btn-danger" style="height:32px; font-size:12px; padding:0 12px;" onclick="deleteAlloc('${alloc.id}'); goToDashboard();">🗑 Elimina</button>`;
+                    }
+                    actionsDiv.innerHTML = html;
+                } else {
+                    actionsDiv.style.display = 'none';
+                }
+                
                 renderSlots(alloc);
             }
         };
@@ -1076,7 +1168,12 @@
             await addDoc(window.getCollectionRef(), { date, team, slots, createdAt: new Date().toISOString() });
         };
 
-        window.deleteAlloc = async (id) => { if(confirm("Eliminare l'intera giornata?")) await deleteDoc(doc(window.getCollectionRef(), id)); };
+        window.archiveAlloc = async (id) => {
+            if(!confirm("Vuoi archiviare questa data? Scomparirà dalla Dashboard.")) return;
+            await updateDoc(doc(window.getCollectionRef(), id), { archived: true });
+        };
+
+        window.deleteAlloc = async (id) => { if(confirm("Eliminare l'intera giornata definitivamente?")) await deleteDoc(doc(window.getCollectionRef(), id)); };
 
         window.openModal = (time) => {
             window.TEMP.slotTime = time;
@@ -1218,9 +1315,11 @@
         function renderArchiveGrid() {
             const grid = document.getElementById('grid-archive'); grid.innerHTML = '';
             const y = getLocalDateString(0); 
-            const arch = window.DB.allocations.filter(a => a.date < y).sort((a,b)=>new Date(b.date)-new Date(a.date));
+            // Includi date passate OPPURE date archiviate manualmente
+            const arch = window.DB.allocations.filter(a => a.date < y || a.archived).sort((a,b)=>new Date(b.date)-new Date(a.date));
             if(arch.length===0) grid.innerHTML='<div style="padding:40px;opacity:0.5;grid-column:1/-1;text-align:center;">Archivio vuoto</div>';
-            arch.forEach(a => createCard(a, grid));
+            // Passa 'archive' come tipo per mostrare il tasto Elimina
+            arch.forEach(a => createCard(a, grid, 'archive'));
         }
         window.goToDashboard = () => { switchView('dashboard-view'); loadDashboard(); };
         window.copyToClipboard = (txt) => {
