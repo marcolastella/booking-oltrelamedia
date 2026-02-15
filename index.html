@@ -124,6 +124,7 @@
         .status-queue { background: rgba(255, 59, 48, 0.2); color: #ff453a; }
         .status-waiting { background: rgba(255, 214, 10, 0.2); color: #FFD60A; }
         .status-ready { background: rgba(48, 209, 88, 0.2); color: #30D158; }
+        .status-archived { background: rgba(128, 128, 128, 0.2); color: #ccc; }
 
         @media (max-width: 900px) {
             .note-header { display: none; }
@@ -231,12 +232,24 @@
     <div id="editing-queue-view" class="view">
         <header>
             <button class="btn" style="background:transparent; border:1px solid #555; color:#ccc;" onclick="goToDashboard()">← Indietro</button>
-            <span style="font-size:18px; font-weight:700;">Coda di Montaggio</span>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:18px; font-weight:700;">Coda di Montaggio</span>
+                <button class="btn btn-secondary" style="font-size:11px; padding:6px 12px;" onclick="openEditingArchive()">📂 Archivio</button>
+            </div>
         </header>
         <div class="glass-panel" style="padding:20px; min-height:400px;"><div id="editing-list"></div></div>
     </div>
 
-    <!-- VISTA ARCHIVIO -->
+    <!-- VISTA ARCHIVIO MONTAGGIO (NUOVA) -->
+    <div id="editing-archive-view" class="view">
+        <header>
+            <button class="btn" style="background:transparent; border:1px solid #555; color:#ccc;" onclick="openEditingQueue()">← Coda Montaggio</button>
+            <span style="font-size:18px; font-weight:700;">Archivio Montaggi Completati</span>
+        </header>
+        <div class="glass-panel" style="padding:20px; min-height:400px;"><div id="editing-archive-list"></div></div>
+    </div>
+
+    <!-- VISTA ARCHIVIO REGISTRAZIONI -->
     <div id="archive-view" class="view">
         <header>
             <button class="btn" style="background:transparent; border:1px solid #555; color:#ccc;" onclick="goToDashboard()">← Indietro</button>
@@ -424,6 +437,7 @@
                 if(document.getElementById('dashboard-view').classList.contains('active')) loadDashboard();
                 else if (document.getElementById('production-notes-view').classList.contains('active')) renderProductionNotes();
                 else if (document.getElementById('editing-queue-view').classList.contains('active')) renderEditingQueue();
+                else if (document.getElementById('editing-archive-view').classList.contains('active')) renderEditingArchive();
                 else if (document.getElementById('slots-view').classList.contains('active') && window.TEMP.allocId) {
                     const current = window.DB.allocations.find(a => a.id === window.TEMP.allocId);
                     if(current) renderSlots(current); else goToDashboard();
@@ -543,6 +557,7 @@
 
             todayAllocations.forEach(alloc => {
                 alloc.slots.forEach(slot => {
+                    // Mostra solo se prenotato E NON è ancora in editing o archivio
                     if (slot.booked && (!slot.info.status || slot.info.status === 'scheduled')) {
                         allSlots.push({ ...slot, allocId: alloc.id, team: alloc.team });
                     }
@@ -649,10 +664,50 @@
                     </div>
                     ${item.info.productionNotes ? `<div style="margin-top:10px; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; font-size:12px; color:#ccc;"><strong>Note di Regia:</strong> ${item.info.productionNotes}</div>` : ''}
                     ${window.SESSION.role === 'ADMIN' ? `
-                        <div style="margin-top:15px; display:flex; gap:10px; justify-content:flex-end;">
+                        <div style="margin-top:15px; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
                             <button class="btn btn-danger" style="font-size:10px; padding:6px;" onclick="updateStatus('${item.allocId}', '${item.time}', 'editing_queue')">Da Montare</button>
                             <button class="btn btn-secondary" style="font-size:10px; padding:6px; color:#FFD60A; border-color:#FFD60A;" onclick="updateStatus('${item.allocId}', '${item.time}', 'waiting')">In Attesa</button>
                             <button class="btn btn-success" style="font-size:10px; padding:6px;" onclick="updateStatus('${item.allocId}', '${item.time}', 'ready')">Pronto</button>
+                            <button class="btn btn-secondary" style="font-size:10px; padding:6px; margin-left:10px;" onclick="updateStatus('${item.allocId}', '${item.time}', 'archived_editing')">📦 Archivia</button>
+                        </div>
+                    ` : ''}
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        window.openEditingArchive = () => { switchView('editing-archive-view'); renderEditingArchive(); };
+
+        function renderEditingArchive() {
+            const container = document.getElementById('editing-archive-list');
+            container.innerHTML = '';
+            let allItems = [];
+            window.DB.allocations.forEach(alloc => {
+                if (window.SESSION.role !== 'ADMIN' && alloc.team !== window.SESSION.user) return;
+                alloc.slots.forEach(slot => {
+                    if (slot.booked && slot.info.status === 'archived_editing') {
+                        allItems.push({ ...slot, allocId: alloc.id, date: alloc.date });
+                    }
+                });
+            });
+            // Ordina per ultimo aggiornamento
+            allItems.sort((a, b) => new Date(b.info.updatedAt || 0) - new Date(a.info.updatedAt || 0));
+
+            if (allItems.length === 0) { container.innerHTML = '<div style="text-align:center; opacity:0.5; padding:40px;">Archivio montaggi vuoto.</div>'; return; }
+
+            allItems.forEach(item => {
+                const strName = `${item.info.guest} - ${item.info.company || ''}`;
+                const div = document.createElement('div');
+                div.className = 'edit-item';
+                div.style.opacity = "0.7"; // Visivamente "archiviato"
+                div.innerHTML = `
+                    <div class="edit-header">
+                        <div><div style="font-weight:bold; font-size:16px;">${item.date} | ${item.time}</div><div style="font-size:12px; opacity:0.6;">${strName}</div></div>
+                        <div class="status-badge status-archived">ARCHIVIATO</div>
+                    </div>
+                    ${window.SESSION.role === 'ADMIN' ? `
+                        <div style="margin-top:10px; text-align:right;">
+                            <button class="btn btn-secondary" style="font-size:10px; padding:6px;" onclick="updateStatus('${item.allocId}', '${item.time}', 'ready')">↺ Ripristina in Coda</button>
                         </div>
                     ` : ''}
                 `;
@@ -665,6 +720,8 @@
             const newSlots = [...alloc.slots];
             const idx = newSlots.findIndex(s => s.time === time);
             newSlots[idx].info.status = newStatus;
+            // Aggiorna updatedAt per ordinamento
+            newSlots[idx].info.updatedAt = new Date().toISOString(); 
             await updateDoc(doc(window.getCollectionRef(), allocId), { slots: newSlots });
         };
 
