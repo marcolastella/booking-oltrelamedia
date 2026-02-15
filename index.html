@@ -337,6 +337,28 @@
         </div>
     </div>
 
+    <!-- MODALE MODIFICA ALLOCAZIONE (ADMIN) -->
+    <div id="edit-alloc-modal" class="modal-overlay">
+        <div class="modal-box glass-panel">
+            <h3 style="margin-top:0;">Modifica Data/Redazione</h3>
+            <p style="font-size:12px; color:#aaa; margin-bottom:15px;">Attenzione: Spostare una data o cambiare redazione non cancellerà gli appuntamenti interni.</p>
+            
+            <div class="input-group">
+                <label class="input-label">Nuova Data</label>
+                <input type="date" id="edit-alloc-date">
+            </div>
+            <div class="input-group">
+                <label class="input-label">Nuova Redazione</label>
+                <select id="edit-alloc-team"></select>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button class="btn" style="background:transparent;" onclick="document.getElementById('edit-alloc-modal').style.display='none'">Annulla</button>
+                <button class="btn btn-primary" onclick="saveEditAlloc()">Salva Modifiche</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODALE PRENOTAZIONE -->
     <div id="booking-modal" class="modal-overlay">
         <div class="modal-box glass-panel">
@@ -426,7 +448,7 @@
         window.SETTINGS = { formats: [], journalists: [], sales: [], teams: [] };
         window.USERS = {};
         window.SESSION = { user: null, role: null };
-        window.TEMP = { allocId: null, slotTime: null };
+        window.TEMP = { allocId: null, slotTime: null, editTargetId: null };
 
         function getLocalDateString(offsetDays = 0) {
             const d = new Date();
@@ -500,25 +522,100 @@
         function createCard(alloc, container) {
             const teamData = window.USERS[alloc.team] || { label: alloc.team, color: '#888' };
             const d = new Date(alloc.date);
+            const month = d.toLocaleString('it-IT', { month: 'long' });
+            const capMonth = month.charAt(0).toUpperCase() + month.slice(1);
+            const dateStr = `${d.getDate()} ${capMonth} ${d.getFullYear()}`;
+            
             const card = document.createElement('div');
             card.className = `date-card glass-panel`;
             card.style.borderLeft = `5px solid ${teamData.color}`;
+            
+            // Click sulla card apre dettaglio
             card.onclick = () => window.openDetails(alloc.id);
+
+            let buttons = '';
+            if(window.SESSION.role === 'ADMIN') {
+                buttons = `
+                    <div style="position:absolute; top:10px; right:10px; display:flex; gap:5px;">
+                        <button onclick="event.stopPropagation(); openEditAlloc('${alloc.id}')" style="background:none; border:none; color:#aaa; font-size:16px; cursor:pointer;" title="Modifica Data/Redazione">✎</button>
+                        <button onclick="event.stopPropagation(); deleteAlloc('${alloc.id}')" style="background:none; border:none; color:#FF3B30; font-size:18px; cursor:pointer;" title="Elimina">&times;</button>
+                    </div>
+                `;
+            }
+
             card.innerHTML = `
-                ${window.SESSION.role === 'ADMIN' ? `<button onclick="event.stopPropagation(); deleteAlloc('${alloc.id}')" style="position:absolute; top:10px; right:10px; background:none; border:none; color:#555; font-size:20px;">&times;</button>` : ''}
+                ${buttons}
                 <div style="font-size:13px; text-transform:uppercase; color:#888;">${teamData.label}</div>
-                <div style="font-size:22px; font-weight:700; margin:5px 0;">${d.getDate()} ${d.toLocaleString('it-IT',{month:'long'})}</div>
+                <div style="font-size:20px; font-weight:700; margin:5px 0;">${dateStr}</div>
                 <div style="font-size:13px; margin-top:10px; color:#fff;">${alloc.slots.filter(s => !s.booked).length} slot liberi</div>
             `;
             container.appendChild(card);
         }
+
+        // --- GESTIONE MODIFICA ALLOCAZIONE (NUOVO) ---
+        window.openEditAlloc = (id) => {
+            window.TEMP.editTargetId = id;
+            const alloc = window.DB.allocations.find(a => a.id === id);
+            if (!alloc) return;
+
+            document.getElementById('edit-alloc-date').value = alloc.date;
+            
+            // Popola select squadre (redazioni)
+            const teamSelect = document.getElementById('edit-alloc-team');
+            teamSelect.innerHTML = '';
+            const teamsList = window.SETTINGS.teams || [];
+            
+            // Fallback se lista vuota
+            if(teamsList.length === 0) {
+               // Prova a popolare con gli utenti esistenti se le impostazioni sono vuote
+               Object.keys(window.USERS).forEach(u => {
+                   if(window.USERS[u].role !== 'ADMIN') {
+                       const opt = document.createElement('option');
+                       opt.value = u;
+                       opt.innerText = window.USERS[u].label;
+                       teamSelect.appendChild(opt);
+                   }
+               });
+            } else {
+               teamsList.forEach(t => {
+                   const opt = document.createElement('option');
+                   opt.value = t.trim().toLowerCase().replace(/\s+/g, '');
+                   opt.innerText = t;
+                   teamSelect.appendChild(opt);
+               });
+            }
+            
+            teamSelect.value = alloc.team;
+            document.getElementById('edit-alloc-modal').style.display = 'flex';
+        };
+
+        window.saveEditAlloc = async () => {
+            const id = window.TEMP.editTargetId;
+            const newDate = document.getElementById('edit-alloc-date').value;
+            const newTeam = document.getElementById('edit-alloc-team').value;
+
+            if(!newDate || !newTeam) return alert("Compila tutti i campi.");
+
+            try {
+                await updateDoc(doc(window.getCollectionRef(), id), {
+                    date: newDate,
+                    team: newTeam
+                });
+                document.getElementById('edit-alloc-modal').style.display = 'none';
+            } catch(e) {
+                alert("Errore modifica: " + e.message);
+            }
+        };
 
         window.openDetails = (allocId) => {
             window.TEMP.allocId = allocId;
             const alloc = window.DB.allocations.find(a => a.id === allocId);
             if(alloc) {
                 switchView('slots-view');
-                document.getElementById('slot-date-title').innerText = alloc.date;
+                const d = new Date(alloc.date);
+                const month = d.toLocaleString('it-IT', { month: 'long' });
+                const capMonth = month.charAt(0).toUpperCase() + month.slice(1);
+                document.getElementById('slot-date-title').innerText = `${d.getDate()} ${capMonth} ${d.getFullYear()}`;
                 document.getElementById('slot-team-subtitle').innerText = window.USERS[alloc.team]?.label || alloc.team;
                 renderSlots(alloc);
             }
@@ -567,7 +664,6 @@
 
             todayAllocations.forEach(alloc => {
                 alloc.slots.forEach(slot => {
-                    // Mostra solo se prenotato E NON è ancora in editing o archivio
                     if (slot.booked && (!slot.info.status || slot.info.status === 'scheduled')) {
                         allSlots.push({ ...slot, allocId: alloc.id, team: alloc.team });
                     }
@@ -624,6 +720,7 @@
             const alloc = window.DB.allocations.find(a => a.id === allocId);
             const newSlots = [...alloc.slots];
             const idx = newSlots.findIndex(s => s.time === time);
+            
             newSlots[idx].info.productionNotes = note;
             await updateDoc(doc(window.getCollectionRef(), allocId), { slots: newSlots });
             document.getElementById('prod-note-modal').style.display = 'none';
@@ -915,11 +1012,30 @@
                 el.appendChild(opt);
             });
         }
+        
+        // MODIFICATO: Usa la lista manuale delle configurazioni
         function populateTeamSelect() {
-            const s = document.getElementById('new-team'); s.innerHTML='';
-            Object.keys(window.USERS).forEach(u => { if(window.USERS[u].role!=='ADMIN') {
-                const o = document.createElement('option'); o.value=u; o.innerText=window.USERS[u].label; s.appendChild(o);
-            }});
+            const s = document.getElementById('new-team'); 
+            s.innerHTML='';
+            
+            const teamsList = window.SETTINGS.teams || [];
+            
+            if (teamsList.length === 0) {
+                // Fallback se lista vuota
+                const opt = document.createElement('option');
+                opt.innerText = "Nessuna redazione in lista";
+                s.appendChild(opt);
+                return;
+            }
+
+            teamsList.forEach(teamName => {
+                const o = document.createElement('option');
+                // Normalizza il nome per l'ID (lowercase, no spazi) per il database
+                o.value = teamName.trim().toLowerCase().replace(/\s+/g, '');
+                // Mostra il nome originale "bello" all'utente
+                o.innerText = teamName;
+                s.appendChild(o);
+            });
         }
     </script>
 </body>
