@@ -191,9 +191,7 @@
                 </div>
                 <div style="flex:1; min-width:140px;">
                     <label class="input-label">Redazione</label>
-                    <select id="new-team" style="margin:0;">
-                        <!-- Popolato dinamicamente dalle liste -->
-                    </select>
+                    <select id="new-team" style="margin:0;"><!-- Popolato da JS --></select>
                 </div>
                 <div style="flex:2; min-width:200px;">
                     <label class="input-label">Fascia Oraria</label>
@@ -569,6 +567,7 @@
 
             todayAllocations.forEach(alloc => {
                 alloc.slots.forEach(slot => {
+                    // Mostra solo se prenotato E NON è ancora in editing o archivio
                     if (slot.booked && (!slot.info.status || slot.info.status === 'scheduled')) {
                         allSlots.push({ ...slot, allocId: alloc.id, team: alloc.team });
                     }
@@ -592,9 +591,12 @@
                 div.innerHTML = `
                     <div style="font-weight:bold; color:#FFD60A;">${item.time}</div>
                     <div>
-                        <div style="font-weight:bold;">${item.info.guest} <button onclick="openProdNoteModal('${item.allocId}', '${item.time}')" style="background:none; border:none; cursor:pointer;" title="Aggiungi Note">✎</button></div>
+                        <div style="font-weight:bold; display:flex; align-items:center; gap:8px;">
+                            ${item.info.guest} 
+                            <button onclick="openProdNoteModal('${item.allocId}', '${item.time}')" style="background:#333; border:1px solid #555; cursor:pointer; color:#00C7BE; border-radius:4px; padding:2px 6px; font-size:11px;" title="Aggiungi Note">✎ Note Produzione</button>
+                        </div>
                         <div style="font-size:12px; opacity:0.7;">${item.info.company || ''}</div>
-                        ${item.info.productionNotes ? `<div style="font-size:11px; color:#00C7BE; margin-top:5px;">Note: ${item.info.productionNotes}</div>` : ''}
+                        ${item.info.productionNotes ? `<div style="font-size:11px; color:#00C7BE; margin-top:5px; background:rgba(0,199,190,0.1); padding:5px; border-radius:4px;"><strong>Note:</strong> ${item.info.productionNotes}</div>` : ''}
                     </div>
                     <div style="font-size:13px; color:#aaa;">${item.info.format || '-'}</div>
                     <div style="font-size:13px;">${item.info.jour || '-'}</div>
@@ -628,7 +630,7 @@
         };
 
         window.sendToEditing = async (allocId, time, btn) => {
-            if(!confirm("Confermi fine intervista?")) return;
+            if(!confirm("Confermi fine intervista? Sposterà il file in coda di montaggio.")) return;
             btn.style.backgroundColor = 'red'; btn.style.color = 'white';
             setTimeout(async () => {
                 const alloc = window.DB.allocations.find(a => a.id === allocId);
@@ -846,9 +848,13 @@
             const journalists = document.getElementById('set-jours').value.split('\n').map(s=>s.trim()).filter(s=>s);
             const sales = document.getElementById('set-sales').value.split('\n').map(s=>s.trim()).filter(s=>s);
             await setDoc(doc(window.getSettingsRef(), 'lists'), { teams, formats, journalists, sales });
+            closeSettings(); // CHIUSURA AUTOMATICA AGGIUNTA
             alert("Liste salvate!");
         };
 
+        window.openUserManager = () => { document.getElementById('users-modal').style.display = 'flex'; renderUsersList(); };
+        window.closeUserManager = () => document.getElementById('users-modal').style.display = 'none';
+        
         function renderUsersList() {
             const c = document.getElementById('users-list-container'); c.innerHTML = '';
             Object.keys(window.USERS).forEach(u => {
@@ -889,15 +895,14 @@
             });
         }
 
-        function getYesterdayString() {
-            const d = new Date();
-            d.setDate(d.getDate() - 1); 
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
+        window.openArchive = () => { switchView('archive-view'); renderArchiveGrid(); };
+        function renderArchiveGrid() {
+            const grid = document.getElementById('grid-archive'); grid.innerHTML = '';
+            const y = getLocalDateString(0); // FIX: Usa "Oggi" come limite superiore per l'archivio (quindi < Oggi)
+            const arch = window.DB.allocations.filter(a => a.date < y).sort((a,b)=>new Date(b.date)-new Date(a.date));
+            if(arch.length===0) grid.innerHTML='<div style="padding:20px;opacity:0.5;">Archivio vuoto</div>';
+            arch.forEach(a => createCard(a, grid));
         }
-
         window.goToDashboard = () => { switchView('dashboard-view'); loadDashboard(); };
         window.copyToClipboard = (txt) => {
             const el = document.createElement('textarea'); el.value = txt; document.body.appendChild(el);
@@ -910,31 +915,11 @@
                 el.appendChild(opt);
             });
         }
-        
-        // NUOVA LOGICA: Popola la select "Redazione" usando la lista manuale delle configurazioni
         function populateTeamSelect() {
-            const s = document.getElementById('new-team'); 
-            s.innerHTML='';
-            
-            // Usa window.SETTINGS.teams invece di window.USERS
-            const teamsList = window.SETTINGS.teams || [];
-            
-            if (teamsList.length === 0) {
-                // Fallback nel caso la lista sia vuota (es. primo avvio)
-                const opt = document.createElement('option');
-                opt.innerText = "Nessuna redazione in lista";
-                s.appendChild(opt);
-                return;
-            }
-
-            teamsList.forEach(teamName => {
-                const o = document.createElement('option');
-                // Normalizza il nome per l'ID (lowercase, no spazi) per il database
-                o.value = teamName.trim().toLowerCase().replace(/\s+/g, '');
-                // Mostra il nome originale "bello" all'utente
-                o.innerText = teamName;
-                s.appendChild(o);
-            });
+            const s = document.getElementById('new-team'); s.innerHTML='';
+            Object.keys(window.USERS).forEach(u => { if(window.USERS[u].role!=='ADMIN') {
+                const o = document.createElement('option'); o.value=u; o.innerText=window.USERS[u].label; s.appendChild(o);
+            }});
         }
     </script>
 </body>
