@@ -177,6 +177,7 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
                 <div style="font-size:12px; font-weight:bold; color:#FFD60A; text-transform:uppercase;">Nuova Disponibilità</div>
                 <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                    <button class="btn btn-secondary" onclick="openUserManager()" style="font-size:11px; padding:8px 12px;">👥 Utenti</button>
                     <button class="btn btn-secondary" onclick="openSettings()" style="font-size:11px; padding:8px 12px;">⚙️ Configurazioni</button>
                     <button class="btn btn-secondary" onclick="openArchive()" style="font-size:11px; padding:8px 12px;">📂 Archivio</button>
                     <button class="btn btn-secondary" onclick="openProductionNotes()" style="font-size:11px; padding:8px 12px; border-color:#00C7BE; color:#00C7BE;">📋 Note Prod.</button>
@@ -190,7 +191,9 @@
                 </div>
                 <div style="flex:1; min-width:140px;">
                     <label class="input-label">Redazione</label>
-                    <select id="new-team" style="margin:0;"><!-- Popolato da JS --></select>
+                    <select id="new-team" style="margin:0;">
+                        <!-- Popolato dinamicamente dalle liste -->
+                    </select>
                 </div>
                 <div style="flex:2; min-width:200px;">
                     <label class="input-label">Fascia Oraria</label>
@@ -282,46 +285,56 @@
         </div>
     </div>
 
-    <!-- MODALE IMPOSTAZIONI (LISTE & UTENTI) -->
-    <div id="settings-modal" class="modal-overlay">
-        <div class="modal-box glass-panel" style="max-width:900px; max-height:90vh; overflow-y:auto;">
-            <h3 style="margin-top:0; margin-bottom:20px; color:#FFD60A;">⚙️ Configurazioni Globali</h3>
-            
-            <!-- SEZIONE REDAZIONI (UTENTI) -->
-            <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:15px; margin-bottom:30px;">
-                <h4 style="margin-top:0; color:#007AFF;">👥 Gestione Redazioni (Utenti)</h4>
-                <div style="display:grid; grid-template-columns: 1fr 2fr; gap:20px;">
-                    <!-- Form Creazione Utente -->
-                    <div style="background:rgba(0,0,0,0.3); padding:15px; border-radius:10px;">
-                        <h5 style="margin-top:0;">Nuova Redazione</h5>
-                        <div class="input-group"><label class="input-label">Username (Login)</label><input type="text" id="u-user" placeholder="es. redazione1"></div>
-                        <div class="input-group"><label class="input-label">Password</label><input type="text" id="u-pass" placeholder="Password"></div>
-                        <div class="input-group"><label class="input-label">Nome Visualizzato</label><input type="text" id="u-label" placeholder="es. Redazione Sport"></div>
-                        <div class="input-group"><label class="input-label">Colore</label><input type="color" id="u-color" value="#007AFF" style="height:40px;"></div>
-                        <button class="btn btn-primary" onclick="saveUserConfig()" style="width:100%;">Salva Redazione</button>
-                    </div>
-                    <!-- Lista Utenti -->
-                    <div style="background:rgba(0,0,0,0.3); padding:15px; border-radius:10px; max-height:300px; overflow-y:auto;">
-                        <h5 style="margin-top:0;">Redazioni Attive</h5>
-                        <div id="users-list-container"></div>
-                    </div>
+    <!-- MODALE GESTIONE UTENTI (ADMIN) -->
+    <div id="users-modal" class="modal-overlay">
+        <div class="modal-box glass-panel" style="max-width:800px;">
+            <h3 style="margin-top:0;">Gestione Utenti & Accessi</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px;">
+                <div style="background:rgba(0,0,0,0.3); padding:15px; border-radius:10px;">
+                    <h4 style="margin-top:0;">Aggiungi / Modifica</h4>
+                    <div class="input-group"><label class="input-label">Username (Login)</label><input type="text" id="u-user" placeholder="es. redazione1"></div>
+                    <div class="input-group"><label class="input-label">Password</label><input type="text" id="u-pass" placeholder="Password"></div>
+                    <div class="input-group"><label class="input-label">Nome Visualizzato</label><input type="text" id="u-label" placeholder="es. Redazione Sport"></div>
+                    <div class="input-group"><label class="input-label">Colore</label><input type="color" id="u-color" value="#007AFF" style="height:40px;"></div>
+                    <button class="btn btn-primary" onclick="saveUserConfig()" style="width:100%;">Salva Utente</button>
+                </div>
+                <div style="background:rgba(0,0,0,0.3); padding:15px; border-radius:10px; max-height:300px; overflow-y:auto;">
+                    <h4 style="margin-top:0;">Utenti Attivi</h4>
+                    <div id="users-list-container"></div>
                 </div>
             </div>
+            <div style="text-align:right;"><button class="btn" style="background:transparent; color:#888;" onclick="closeUserManager()">Chiudi</button></div>
+        </div>
+    </div>
 
-            <!-- SEZIONE LISTE (DROPDOWN) -->
-            <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:15px;">
-                <h4 style="margin-top:0; color:#30D158;">📜 Liste Menù a Tendina</h4>
-                <p style="font-size:11px; color:#aaa;">Scrivi un elemento per riga.</p>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:15px;">
-                    <div><label class="input-label">Formats</label><textarea id="set-formats" rows="8"></textarea></div>
-                    <div><label class="input-label">Giornalisti</label><textarea id="set-jours" rows="8"></textarea></div>
-                    <div><label class="input-label">Commerciali</label><textarea id="set-sales" rows="8"></textarea></div>
+    <!-- MODALE IMPOSTAZIONI (LISTE) -->
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-box glass-panel" style="max-width:800px; max-height:90vh; overflow-y:auto;">
+            <h3 style="margin-top:0; margin-bottom:20px; color:#FFD60A;">⚙️ Configurazioni Liste</h3>
+            <p style="font-size:12px; color:#aaa; margin-bottom:15px;">Inserisci un elemento per riga.</p>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                <div>
+                    <label class="input-label">Redazioni (Menù Assegnazione)</label>
+                    <textarea id="set-teams" rows="8" placeholder="Touchpoint&#10;Insurzine..."></textarea>
+                </div>
+                <div>
+                    <label class="input-label">Formats</label>
+                    <textarea id="set-formats" rows="8" placeholder="Talk Show..."></textarea>
+                </div>
+                <div>
+                    <label class="input-label">Giornalisti</label>
+                    <textarea id="set-jours" rows="8" placeholder="Mario Rossi..."></textarea>
+                </div>
+                <div>
+                    <label class="input-label">Commerciali</label>
+                    <textarea id="set-sales" rows="8" placeholder="Anna Bianchi..."></textarea>
                 </div>
             </div>
 
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-                <button class="btn" style="background:transparent; color:#888;" onclick="closeSettings()">Chiudi</button>
-                <button class="btn btn-primary" onclick="saveSettings()">Salva Tutte le Liste</button>
+                <button class="btn" style="background:transparent; color:#888;" onclick="closeSettings()">Annulla</button>
+                <button class="btn btn-primary" onclick="saveSettings()">Salva Configurazioni</button>
             </div>
         </div>
     </div>
@@ -412,12 +425,11 @@
         } catch (e) { console.error("Init Error", e); }
 
         window.DB = { allocations: [] }; 
-        window.SETTINGS = { formats: [], journalists: [], sales: [] };
+        window.SETTINGS = { formats: [], journalists: [], sales: [], teams: [] };
         window.USERS = {};
         window.SESSION = { user: null, role: null };
         window.TEMP = { allocId: null, slotTime: null };
 
-        // --- UTILS DATA ---
         function getLocalDateString(offsetDays = 0) {
             const d = new Date();
             d.setDate(d.getDate() + offsetDays);
@@ -477,7 +489,7 @@
         function renderGrid() {
             const grid = document.getElementById('grid-dates');
             grid.innerHTML = '';
-            const yesterday = getLocalDateString(-1); // Ieri
+            const yesterday = getLocalDateString(-1); 
             const myAllocations = window.DB.allocations.filter(a => {
                 if (window.SESSION.role === 'ADMIN') return true;
                 return a.team === window.SESSION.user;
@@ -551,13 +563,12 @@
         function renderProductionNotes() {
             const container = document.getElementById('notes-list');
             container.innerHTML = '';
-            const todayStr = getLocalDateString(0); // Oggi
+            const todayStr = getLocalDateString(0); 
             const todayAllocations = window.DB.allocations.filter(a => a.date === todayStr);
             let allSlots = [];
 
             todayAllocations.forEach(alloc => {
                 alloc.slots.forEach(slot => {
-                    // Mostra solo se prenotato E NON è ancora in editing o archivio
                     if (slot.booked && (!slot.info.status || slot.info.status === 'scheduled')) {
                         allSlots.push({ ...slot, allocId: alloc.id, team: alloc.team });
                     }
@@ -572,7 +583,6 @@
             }
 
             allSlots.forEach(item => {
-                // Generazione nome file blindata
                 const cleanName = (item.info.guest || '').toLowerCase().replace(/[^a-z0-9]/g, '');
                 const cleanComp = (item.info.company || '').toLowerCase().replace(/[^a-z0-9]/g, '');
                 const filename = `${cleanName}_${cleanComp}`;
@@ -612,14 +622,13 @@
             const alloc = window.DB.allocations.find(a => a.id === allocId);
             const newSlots = [...alloc.slots];
             const idx = newSlots.findIndex(s => s.time === time);
-            
             newSlots[idx].info.productionNotes = note;
             await updateDoc(doc(window.getCollectionRef(), allocId), { slots: newSlots });
             document.getElementById('prod-note-modal').style.display = 'none';
         };
 
         window.sendToEditing = async (allocId, time, btn) => {
-            if(!confirm("Confermi fine intervista? Sposterà il file in coda di montaggio.")) return;
+            if(!confirm("Confermi fine intervista?")) return;
             btn.style.backgroundColor = 'red'; btn.style.color = 'white';
             setTimeout(async () => {
                 const alloc = window.DB.allocations.find(a => a.id === allocId);
@@ -651,11 +660,8 @@
                 const statusMap = { 'editing_queue': { label: 'DA MONTARE', class: 'status-queue' }, 'waiting': { label: 'IN ATTESA', class: 'status-waiting' }, 'ready': { label: 'PRONTO', class: 'status-ready' } };
                 const st = statusMap[item.info.status];
                 
-                // --- FIX COPY STRING ---
                 const strName = `${item.info.guest} - ${item.info.company || ''}`;
                 const strLower = `${item.info.guest}\n${item.info.job || ''}`;
-                
-                // Safe versions for onClick attribute (escape quotes)
                 const safeStrName = strName.replace(/'/g, "\\'").replace(/"/g, "&quot;");
                 const safeStrLower = strLower.replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, "\\n");
 
@@ -698,7 +704,6 @@
                     }
                 });
             });
-            // Ordina per ultimo aggiornamento
             allItems.sort((a, b) => new Date(b.info.updatedAt || 0) - new Date(a.info.updatedAt || 0));
 
             if (allItems.length === 0) { container.innerHTML = '<div style="text-align:center; opacity:0.5; padding:40px;">Archivio montaggi vuoto.</div>'; return; }
@@ -707,7 +712,7 @@
                 const strName = `${item.info.guest} - ${item.info.company || ''}`;
                 const div = document.createElement('div');
                 div.className = 'edit-item';
-                div.style.opacity = "0.7"; // Visivamente "archiviato"
+                div.style.opacity = "0.7"; 
                 div.innerHTML = `
                     <div class="edit-header">
                         <div><div style="font-weight:bold; font-size:16px;">${item.date} | ${item.time}</div><div style="font-size:12px; opacity:0.6;">${strName}</div></div>
@@ -728,7 +733,6 @@
             const newSlots = [...alloc.slots];
             const idx = newSlots.findIndex(s => s.time === time);
             newSlots[idx].info.status = newStatus;
-            // Aggiorna updatedAt per ordinamento
             newSlots[idx].info.updatedAt = new Date().toISOString(); 
             await updateDoc(doc(window.getCollectionRef(), allocId), { slots: newSlots });
         };
@@ -823,10 +827,11 @@
             closeModal();
         };
 
-        // --- GESTIONE IMPOSTAZIONI UNIFICATE ---
+        // --- GESTIONE UTENTI & LISTE ---
         window.openSettings = () => {
             document.getElementById('settings-modal').style.display = 'flex';
             // Liste
+            document.getElementById('set-teams').value = (window.SETTINGS.teams || []).join('\n'); // NUOVO
             document.getElementById('set-formats').value = (window.SETTINGS.formats || []).join('\n');
             document.getElementById('set-jours').value = (window.SETTINGS.journalists || []).join('\n');
             document.getElementById('set-sales').value = (window.SETTINGS.sales || []).join('\n');
@@ -836,10 +841,11 @@
         window.closeSettings = () => document.getElementById('settings-modal').style.display = 'none';
         
         window.saveSettings = async () => {
+            const teams = document.getElementById('set-teams').value.split('\n').map(s=>s.trim()).filter(s=>s);
             const formats = document.getElementById('set-formats').value.split('\n').map(s=>s.trim()).filter(s=>s);
             const journalists = document.getElementById('set-jours').value.split('\n').map(s=>s.trim()).filter(s=>s);
             const sales = document.getElementById('set-sales').value.split('\n').map(s=>s.trim()).filter(s=>s);
-            await setDoc(doc(window.getSettingsRef(), 'lists'), { formats, journalists, sales });
+            await setDoc(doc(window.getSettingsRef(), 'lists'), { teams, formats, journalists, sales });
             alert("Liste salvate!");
         };
 
@@ -868,25 +874,30 @@
 
         function loadSettings() {
             if(!isFirebaseActive) return;
-            onSnapshot(doc(window.getSettingsRef(), 'lists'), (s) => { if(s.exists()) window.SETTINGS = s.data(); });
+            onSnapshot(doc(window.getSettingsRef(), 'lists'), (s) => { 
+                if(s.exists()) {
+                    window.SETTINGS = s.data();
+                    if(window.SESSION.role === 'ADMIN') populateTeamSelect(); // Update dropdown
+                }
+            });
         }
         function loadUsers() {
             if(!isFirebaseActive) return;
             onSnapshot(doc(window.getSettingsRef(), 'users'), (s) => { 
                 if(s.exists()) window.USERS = s.data(); 
-                else setDoc(doc(window.getSettingsRef(), 'users'), window.USERS); // Init default
-                if(window.SESSION.role === 'ADMIN') populateTeamSelect();
+                else setDoc(doc(window.getSettingsRef(), 'users'), window.USERS);
             });
         }
 
-        window.openArchive = () => { switchView('archive-view'); renderArchiveGrid(); };
-        function renderArchiveGrid() {
-            const grid = document.getElementById('grid-archive'); grid.innerHTML = '';
-            const y = getLocalDateString(-1);
-            const arch = window.DB.allocations.filter(a => a.date < y).sort((a,b)=>new Date(b.date)-new Date(a.date));
-            if(arch.length===0) grid.innerHTML='<div style="padding:20px;opacity:0.5;">Archivio vuoto</div>';
-            arch.forEach(a => createCard(a, grid));
+        function getYesterdayString() {
+            const d = new Date();
+            d.setDate(d.getDate() - 1); 
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
+
         window.goToDashboard = () => { switchView('dashboard-view'); loadDashboard(); };
         window.copyToClipboard = (txt) => {
             const el = document.createElement('textarea'); el.value = txt; document.body.appendChild(el);
@@ -899,11 +910,31 @@
                 el.appendChild(opt);
             });
         }
+        
+        // NUOVA LOGICA: Popola la select "Redazione" usando la lista manuale delle configurazioni
         function populateTeamSelect() {
-            const s = document.getElementById('new-team'); s.innerHTML='';
-            Object.keys(window.USERS).forEach(u => { if(window.USERS[u].role!=='ADMIN') {
-                const o = document.createElement('option'); o.value=u; o.innerText=window.USERS[u].label; s.appendChild(o);
-            }});
+            const s = document.getElementById('new-team'); 
+            s.innerHTML='';
+            
+            // Usa window.SETTINGS.teams invece di window.USERS
+            const teamsList = window.SETTINGS.teams || [];
+            
+            if (teamsList.length === 0) {
+                // Fallback nel caso la lista sia vuota (es. primo avvio)
+                const opt = document.createElement('option');
+                opt.innerText = "Nessuna redazione in lista";
+                s.appendChild(opt);
+                return;
+            }
+
+            teamsList.forEach(teamName => {
+                const o = document.createElement('option');
+                // Normalizza il nome per l'ID (lowercase, no spazi) per il database
+                o.value = teamName.trim().toLowerCase().replace(/\s+/g, '');
+                // Mostra il nome originale "bello" all'utente
+                o.innerText = teamName;
+                s.appendChild(o);
+            });
         }
     </script>
 </body>
