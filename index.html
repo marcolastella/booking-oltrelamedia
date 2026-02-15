@@ -504,7 +504,6 @@
             document.getElementById('user-badge').innerText = window.SESSION.role;
             document.getElementById('admin-tools').style.display = window.SESSION.role === 'ADMIN' ? 'block' : 'none';
             
-            // Forza popolamento select se admin
             if (window.SESSION.role === 'ADMIN') {
                 populateTeamSelect();
             }
@@ -817,6 +816,7 @@
                     ${window.SESSION.role === 'ADMIN' ? `
                         <div style="margin-top:10px; text-align:right;">
                             <button class="btn btn-secondary" style="font-size:10px; padding:6px;" onclick="updateStatus('${item.allocId}', '${item.time}', 'ready')">↺ Ripristina in Coda</button>
+                            <button class="btn btn-danger" style="font-size:10px; padding:6px; margin-left:5px;" onclick="deleteArchivedEditing('${item.allocId}', '${item.time}')">🗑 Elimina</button>
                         </div>
                     ` : ''}
                 `;
@@ -830,6 +830,18 @@
             const idx = newSlots.findIndex(s => s.time === time);
             newSlots[idx].info.status = newStatus;
             newSlots[idx].info.updatedAt = new Date().toISOString(); 
+            await updateDoc(doc(window.getCollectionRef(), allocId), { slots: newSlots });
+        };
+
+        window.deleteArchivedEditing = async (allocId, time) => {
+            if(!confirm("Eliminare definitivamente questo montaggio archiviato? L'operazione è irreversibile.")) return;
+            const alloc = window.DB.allocations.find(a => a.id === allocId);
+            const newSlots = [...alloc.slots];
+            const idx = newSlots.findIndex(s => s.time === time);
+            
+            // Reset to free slot
+            newSlots[idx] = { time: time, booked: false, info: {} };
+            
             await updateDoc(doc(window.getCollectionRef(), allocId), { slots: newSlots });
         };
 
