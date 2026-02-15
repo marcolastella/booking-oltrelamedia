@@ -503,6 +503,12 @@
             document.getElementById('user-welcome').innerText = userData ? userData.label : window.SESSION.user;
             document.getElementById('user-badge').innerText = window.SESSION.role;
             document.getElementById('admin-tools').style.display = window.SESSION.role === 'ADMIN' ? 'block' : 'none';
+            
+            // Forza popolamento select se admin
+            if (window.SESSION.role === 'ADMIN') {
+                populateTeamSelect();
+            }
+            
             renderGrid();
         }
 
@@ -530,7 +536,6 @@
             card.className = `date-card glass-panel`;
             card.style.borderLeft = `5px solid ${teamData.color}`;
             
-            // Click sulla card apre dettaglio
             card.onclick = () => window.openDetails(alloc.id);
 
             let buttons = '';
@@ -552,7 +557,7 @@
             container.appendChild(card);
         }
 
-        // --- GESTIONE MODIFICA ALLOCAZIONE (NUOVO) ---
+        // --- GESTIONE MODIFICA ALLOCAZIONE ---
         window.openEditAlloc = (id) => {
             window.TEMP.editTargetId = id;
             const alloc = window.DB.allocations.find(a => a.id === id);
@@ -560,22 +565,14 @@
 
             document.getElementById('edit-alloc-date').value = alloc.date;
             
-            // Popola select squadre (redazioni)
             const teamSelect = document.getElementById('edit-alloc-team');
             teamSelect.innerHTML = '';
             const teamsList = window.SETTINGS.teams || [];
             
-            // Fallback se lista vuota
             if(teamsList.length === 0) {
-               // Prova a popolare con gli utenti esistenti se le impostazioni sono vuote
-               Object.keys(window.USERS).forEach(u => {
-                   if(window.USERS[u].role !== 'ADMIN') {
-                       const opt = document.createElement('option');
-                       opt.value = u;
-                       opt.innerText = window.USERS[u].label;
-                       teamSelect.appendChild(opt);
-                   }
-               });
+               const opt = document.createElement('option');
+               opt.innerText = "Nessuna redazione in lista";
+               teamSelect.appendChild(opt);
             } else {
                teamsList.forEach(t => {
                    const opt = document.createElement('option');
