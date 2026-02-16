@@ -167,6 +167,28 @@
         input::placeholder { color: #333; }
         input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(0.6); cursor: pointer; }
 
+        /* Custom Checkbox Container */
+        .checkbox-list {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .checkbox-item:hover { background: rgba(255,255,255,0.05); }
+        .checkbox-item:last-child { border-bottom: none; }
+        .checkbox-item input { width: auto; margin-right: 12px; cursor: pointer; }
+        .checkbox-item span { font-size: 13px; color: #ccc; }
+
         /* --- VIEWS --- */
         .view {
             display: none;
@@ -392,7 +414,7 @@
             <div id="login-msg" style="color: var(--danger); margin-top: 24px; font-size:13px; font-weight:600; text-align:center; min-height:20px;"></div>
             
             <div style="margin-top:48px; border-top:1px solid rgba(255,255,255,0.05); padding-top:24px; display:flex; justify-content:space-between; align-items:center;">
-                <div style="font-size:11px; color:var(--text-muted);">Build 3.0.6 Stable</div>
+                <div style="font-size:11px; color:var(--text-muted);">Build 3.1.0 Pro</div>
                 <div style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:8px;">
                     Status <span id="db-status" style="width:6px; height:6px; background:#444; border-radius:50%; display:inline-block; box-shadow:0 0 5px #444;"></span>
                 </div>
@@ -568,22 +590,28 @@
 
     <!-- MODALE GESTIONE UTENTI -->
     <div id="users-modal" class="modal-overlay">
-        <div class="modal-box" style="max-width:800px;">
+        <div class="modal-box" style="max-width:900px;">
             <div style="display:flex; justify-content:space-between; margin-bottom:24px; border-bottom:1px solid var(--border-glass); padding-bottom:16px;">
-                <h3 style="margin:0; color:white;">Gestione Team</h3>
+                <h3 style="margin:0; color:white;">Gestione Team e Permessi</h3>
                 <button class="btn btn-secondary" onclick="closeUserManager()">Chiudi</button>
             </div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:32px;">
                 <div style="background:rgba(255,255,255,0.02); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-glass);">
-                    <h4 style="margin:0 0 20px 0; font-size:11px; text-transform:uppercase; color:var(--text-muted); letter-spacing:1px; font-weight:800;">Nuovo Utente</h4>
-                    <div class="input-group"><label class="input-label">Username</label><input type="text" id="u-user"></div>
-                    <div class="input-group"><label class="input-label">Password</label><input type="text" id="u-pass"></div>
+                    <h4 style="margin:0 0 20px 0; font-size:11px; text-transform:uppercase; color:var(--text-muted); letter-spacing:1px; font-weight:800;">Dati Utente / Permessi</h4>
+                    <div class="input-group"><label class="input-label">Username</label><input type="text" id="u-user" placeholder="Nuovo o esistente per modifica"></div>
+                    <div class="input-group"><label class="input-label">Password</label><input type="text" id="u-pass" placeholder="Lascia vuoto per non cambiare"></div>
                     <div class="input-group"><label class="input-label">Nome Visualizzato</label><input type="text" id="u-label"></div>
                     <div class="input-group"><label class="input-label">Colore Team</label><input type="color" id="u-color" value="#3b82f6" style="height:48px; cursor:pointer; width:100%;"></div>
-                    <button class="btn btn-primary" onclick="saveUserConfig()" style="width:100%;">Aggiungi Utente</button>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Visualizza Altre Redazioni (Oltre alla propria)</label>
+                        <div id="permissions-container" class="checkbox-list"></div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="saveUserConfig()" style="width:100%;">Salva / Aggiorna Utente</button>
                 </div>
-                <div style="background:rgba(255,255,255,0.02); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-glass); max-height:420px; overflow-y:auto;">
-                    <h4 style="margin:0 0 20px 0; font-size:11px; text-transform:uppercase; color:var(--text-muted); letter-spacing:1px; font-weight:800;">Utenti Attivi</h4>
+                <div style="background:rgba(255,255,255,0.02); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-glass); max-height:600px; overflow-y:auto;">
+                    <h4 style="margin:0 0 20px 0; font-size:11px; text-transform:uppercase; color:var(--text-muted); letter-spacing:1px; font-weight:800;">Utenti Attivi (Clicca per modificare)</h4>
                     <div id="users-list-container"></div>
                 </div>
             </div>
@@ -757,12 +785,16 @@
         function renderGrid() {
             const grid = document.getElementById('grid-dates');
             grid.innerHTML = '';
-            // CAMBIATO: Usa '0' per Oggi invece di '-1' (ieri)
             const today = getLocalDateString(0); 
             const myAllocations = window.DB.allocations.filter(a => {
                 if(a.archived) return false;
                 if (window.SESSION.role === 'ADMIN') return true;
-                return a.team === window.SESSION.user;
+                
+                // VISIBILITY LOGIC
+                const currentUserData = window.USERS[window.SESSION.user];
+                const allowedTeams = currentUserData?.allowedTeams || [];
+                return a.team === window.SESSION.user || allowedTeams.includes(a.team);
+
             }).filter(a => a.date >= today); // Mostra solo da oggi in poi
             myAllocations.sort((a, b) => new Date(a.date) - new Date(b.date));
             
@@ -1261,19 +1293,70 @@
             closeSettings();
         };
 
-        window.openUserManager = () => { document.getElementById('users-modal').style.display = 'flex'; renderUsersList(); };
+        window.openUserManager = () => { document.getElementById('users-modal').style.display = 'flex'; renderUsersList(); renderPermissionsCheckboxes(); };
         window.closeUserManager = () => document.getElementById('users-modal').style.display = 'none';
         
+        // --- NEW: Render checkboxes for team permissions ---
+        function renderPermissionsCheckboxes() {
+            const container = document.getElementById('permissions-container');
+            container.innerHTML = '';
+            const teams = window.SETTINGS.teams || [];
+            
+            if(teams.length === 0) {
+                container.innerHTML = '<div style="font-size:12px; color:#666;">Nessuna redazione configurata.</div>';
+                return;
+            }
+
+            teams.forEach(teamName => {
+                const teamId = teamName.trim().toLowerCase().replace(/\s+/g, '');
+                if(teamId === 'admin') return;
+
+                const div = document.createElement('div');
+                div.className = 'checkbox-item';
+                div.innerHTML = `
+                    <input type="checkbox" id="perm-${teamId}" value="${teamId}">
+                    <span>${teamName}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // --- NEW: Load user data into form on click ---
+        window.loadUserForEdit = (username) => {
+            const user = window.USERS[username];
+            if(!user) return;
+
+            document.getElementById('u-user').value = username;
+            document.getElementById('u-pass').value = user.password; // Show password for easier editing
+            document.getElementById('u-label').value = user.label;
+            document.getElementById('u-color').value = user.color || '#3b82f6';
+
+            // Reset checkboxes
+            document.querySelectorAll('#permissions-container input[type="checkbox"]').forEach(cb => cb.checked = false);
+
+            // Check Allowed Teams
+            if(user.allowedTeams && Array.isArray(user.allowedTeams)) {
+                user.allowedTeams.forEach(tid => {
+                    const cb = document.getElementById(`perm-${tid}`);
+                    if(cb) cb.checked = true;
+                });
+            }
+        };
+
         function renderUsersList() {
             const c = document.getElementById('users-list-container'); c.innerHTML = '';
             Object.keys(window.USERS).forEach(u => {
+                const user = window.USERS[u];
+                const hasPerms = user.allowedTeams && user.allowedTeams.length > 0;
+                
                 c.innerHTML += `
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid #333;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid #333; cursor:pointer;" onclick="loadUserForEdit('${u}')" title="Clicca per modificare">
                         <div style="display:flex; align-items:center; gap:10px;">
-                            <span style="background:${window.USERS[u].color}; width:12px; height:12px; border-radius:50%;"></span> 
+                            <span style="background:${user.color}; width:12px; height:12px; border-radius:50%;"></span> 
                             <span style="font-weight:500;">${u}</span>
+                            ${hasPerms ? '<span style="font-size:10px; background:#333; padding:2px 6px; border-radius:4px; color:#aaa;">+PERMS</span>' : ''}
                         </div>
-                        ${u!=='admin' ? `<button onclick="deleteUser('${u}')" style="background:none; border:none; color:#666; cursor:pointer;">&times;</button>` : ''}
+                        ${u!=='admin' ? `<button onclick="event.stopPropagation(); deleteUser('${u}')" style="background:none; border:none; color:#666; cursor:pointer;">&times;</button>` : ''}
                     </div>`;
             });
         }
@@ -1283,11 +1366,38 @@
             const p = document.getElementById('u-pass').value;
             const l = document.getElementById('u-label').value;
             const c = document.getElementById('u-color').value;
-            if(!u || !p) return alert("Inserire User e Password");
-            window.USERS[u] = { password: p, label: l, color: c, role: u==='admin'?'ADMIN':'EDITOR' };
+            
+            // Collect Permissions
+            const allowedTeams = [];
+            document.querySelectorAll('#permissions-container input[type="checkbox"]:checked').forEach(cb => {
+                allowedTeams.push(cb.value);
+            });
+
+            if(!u) return alert("Inserire Username");
+            
+            // If editing existing user and password empty, keep old password
+            let finalPass = p;
+            if(!p && window.USERS[u]) finalPass = window.USERS[u].password;
+            if(!finalPass) return alert("Inserire Password");
+
+            window.USERS[u] = { 
+                password: finalPass, 
+                label: l, 
+                color: c, 
+                role: u==='admin'?'ADMIN':'EDITOR',
+                allowedTeams: allowedTeams 
+            };
+            
             await setDoc(doc(window.getSettingsRef(), 'users'), window.USERS);
             renderUsersList();
-            document.getElementById('u-user').value=''; document.getElementById('u-pass').value=''; document.getElementById('u-label').value='';
+            
+            // Clear form
+            document.getElementById('u-user').value=''; 
+            document.getElementById('u-pass').value=''; 
+            document.getElementById('u-label').value='';
+            document.querySelectorAll('#permissions-container input').forEach(i => i.checked=false);
+            
+            alert("Utente salvato con successo!");
         };
 
         window.deleteUser = async (u) => {
