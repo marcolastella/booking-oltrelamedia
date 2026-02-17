@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Production Booking Suite</title>
+    <title>Production Booking Suite v4</title>
     
-    <!-- FONTS: Inter per UI, JetBrains Mono per Dati -->
+    <!-- FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -13,32 +13,25 @@
     <style>
         /* --- DESIGN TOKENS --- */
         :root {
-            /* Palette Sfondi */
             --bg-app: #050505;
             --bg-panel: rgba(20, 20, 23, 0.65);
             --bg-panel-hover: rgba(35, 35, 40, 0.85);
             --bg-input: #0a0a0c;
             
-            /* Palette Accenti */
             --primary: #3b82f6; 
-            --primary-dim: rgba(59, 130, 246, 0.15);
             --danger: #ef4444;
             --success: #10b981;
             --warning: #f59e0b;
             --purple: #8b5cf6;
             
-            /* Testo */
             --text-main: #ffffff;
             --text-secondary: #a1a1aa;
             --text-muted: #52525b;
             
-            /* Bordi & Effetti */
             --border-glass: rgba(255, 255, 255, 0.08);
             --border-highlight: rgba(255, 255, 255, 0.15);
             --shadow-deep: 0 20px 40px -10px rgba(0, 0, 0, 0.8);
-            --glow-primary: 0 0 20px rgba(59, 130, 246, 0.2);
             
-            /* Dimensioni */
             --radius-sm: 8px;
             --radius-md: 14px;
             --radius-lg: 24px;
@@ -51,19 +44,13 @@
             background-color: var(--bg-app);
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             min-height: 100vh;
             overflow-x: hidden;
             font-size: 14px;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-            /* Sfondo Cinematico: Gradiente profondo dall'alto */
-            background-image: 
-                radial-gradient(circle at 50% -20%, #1e2030 0%, #050505 50%);
+            background-image: radial-gradient(circle at 50% -20%, #1e2030 0%, #050505 50%);
         }
 
-        /* --- SCROLLBAR --- */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; border: 2px solid var(--bg-app); }
@@ -73,336 +60,139 @@
         .glass-panel {
             background: var(--bg-panel);
             border: 1px solid var(--border-glass);
-            border-top: 1px solid var(--border-highlight); /* Luce zenitale */
+            border-top: 1px solid var(--border-highlight);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-deep);
             backdrop-filter: blur(40px);
             -webkit-backdrop-filter: blur(40px);
-            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
         }
 
         /* --- BUTTONS --- */
         .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 20px;
-            height: 42px;
-            border-radius: var(--radius-md);
-            font-weight: 600;
-            font-size: 13px;
-            letter-spacing: 0.01em;
-            cursor: pointer;
-            border: 1px solid transparent;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            white-space: nowrap;
-            position: relative;
-            overflow: hidden;
-            z-index: 10; /* Ensure clickable above other elements */
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 0 20px; height: 42px; border-radius: var(--radius-md);
+            font-weight: 600; font-size: 13px; cursor: pointer; border: 1px solid transparent;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); white-space: nowrap;
         }
         .btn:active { transform: scale(0.97); }
-        .btn > * { pointer-events: none; } /* Prevents icon/text from stealing click */
-
-        .btn-primary {
-            background: white;
-            color: black;
-            border: 1px solid white;
-            box-shadow: 0 4px 20px rgba(255,255,255,0.15);
-        }
-        .btn-primary:hover { 
-            background: #f0f0f0; 
-            box-shadow: 0 6px 25px rgba(255,255,255,0.25);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-glass);
-            color: var(--text-main);
-        }
-        .btn-secondary:hover { 
-            background: rgba(255, 255, 255, 0.08); 
-            border-color: rgba(255,255,255,0.25);
-            color: white;
-        }
-
-        .btn-danger {
-            background: rgba(239, 68, 68, 0.08);
-            color: #f87171;
-            border: 1px solid rgba(239, 68, 68, 0.15);
-        }
+        .btn-primary { background: white; color: black; box-shadow: 0 4px 20px rgba(255,255,255,0.15); }
+        .btn-primary:hover { background: #f0f0f0; box-shadow: 0 6px 25px rgba(255,255,255,0.25); }
+        .btn-secondary { background: rgba(255, 255, 255, 0.03); border-color: var(--border-glass); color: var(--text-main); }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255,255,255,0.25); color: white; }
+        .btn-danger { background: rgba(239, 68, 68, 0.08); color: #f87171; border-color: rgba(239, 68, 68, 0.15); }
         .btn-danger:hover { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); box-shadow: 0 0 15px rgba(239, 68, 68, 0.1); }
-
-        .btn-success {
-            background: rgba(16, 185, 129, 0.08);
-            color: #34d399;
-            border: 1px solid rgba(16, 185, 129, 0.15);
-        }
+        .btn-success { background: rgba(16, 185, 129, 0.08); color: #34d399; border-color: rgba(16, 185, 129, 0.15); }
 
         /* --- INPUTS --- */
         .input-group { margin-bottom: 24px; position: relative; }
-        .input-label {
-            display: block;
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        .input-label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
         input, select, textarea {
-            width: 100%;
-            background: var(--bg-input);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-md);
-            padding: 14px 18px;
-            color: var(--text-main);
-            font-size: 14px;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.25s ease;
+            width: 100%; background: var(--bg-input); border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md); padding: 14px 18px; color: var(--text-main);
+            font-family: 'Inter', sans-serif; transition: all 0.25s ease;
         }
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-            background: #121214;
-        }
-        input::placeholder { color: #333; }
-        input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(0.6); cursor: pointer; }
-
-        /* Custom Checkbox Container */
-        .checkbox-list {
-            background: rgba(0,0,0,0.3);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-md);
-            padding: 12px;
-            max-height: 180px;
-            overflow-y: auto;
-        }
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            padding: 8px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .checkbox-item:hover { background: rgba(255,255,255,0.05); }
-        .checkbox-item:last-child { border-bottom: none; }
-        .checkbox-item input { width: auto; margin-right: 12px; cursor: pointer; }
-        .checkbox-item span { font-size: 13px; color: #ccc; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); background: #121214; }
 
         /* --- VIEWS --- */
-        .view {
-            display: none;
-            width: 100%;
-            max-width: 1440px;
-            margin: 0 auto;
-            padding: 20px 32px 40px 32px; /* Ridotto padding top per far salire contenuti */
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.2, 1, 0.3, 1);
-        }
-        .view.active {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* --- LOGIN FIX --- */
-        #login-view {
-            min-height: 100vh;
-            /* Rimosso display: flex !important che causava l'overlap */
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            margin: 0; 
-            max-width: 100%;
-        }
-        #login-view.active {
-            display: flex; /* Display flex SOLO quando attivo */
-        }
-
-        .login-card {
-            width: 100%;
-            max-width: 440px;
-            padding: 48px;
-            background: rgba(15, 15, 18, 0.8);
-            /* Centering text content */
-            text-align: center;
-        }
+        .view { display: none; width: 100%; max-width: 1440px; margin: 0 auto; padding: 20px 32px 40px 32px; opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s; }
+        .view.active { display: block; opacity: 1; transform: translateY(0); }
         
-        /* Modifica Logo */
-        .brand-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        
-        .brand-title {
-            font-size: 32px;
-            font-weight: 800;
-            letter-spacing: -1px;
-            color: #ffffff;
-            line-height: 1.1;
-            margin-bottom: 4px;
-        }
-        
-        .brand-subtitle-main {
-            font-size: 18px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            
-            /* Effetto Argento Cangiante */
-            background: linear-gradient(120deg, #666 0%, #bbb 25%, #fff 50%, #bbb 75%, #666 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            transition: background-position 0.6s ease;
-        }
-        
-        .brand-subtitle-main:hover {
-            background-position: 200% center;
-            cursor: default;
-        }
+        #login-view { min-height: 100vh; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        #login-view.active { display: flex; }
+        .login-card { width: 100%; max-width: 440px; padding: 48px; background: rgba(15, 15, 18, 0.8); text-align: center; }
 
-        /* Allineamento input a sinistra anche se il container è centrato */
-        .login-card .input-group, 
-        .login-card button {
-            text-align: left;
-        }
-        .login-card button {
-            display: flex;
-            justify-content: center;
-        }
-
-        /* --- DASHBOARD --- */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 24px;
-            margin-top: 32px;
-        }
+        /* --- DASHBOARD & CARDS --- */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; margin-top: 32px; }
         .date-card {
-            padding: 28px;
+            padding: 28px; position: relative; cursor: pointer; overflow: hidden;
+            background: var(--bg-panel); border: 1px solid var(--border-glass); border-top: 1px solid var(--border-highlight);
+            border-radius: var(--radius-lg); backdrop-filter: blur(40px); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .date-card:hover { transform: translateY(-8px); background: var(--bg-panel-hover); box-shadow: 0 30px 60px -12px rgba(0,0,0,0.7); }
+        .date-card::before { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 4px; background: var(--team-color, #444); box-shadow: 0 0 20px var(--team-color); }
+
+        /* --- EDITING QUEUE STYLES (NEW) --- */
+        .edit-item-new {
             position: relative;
-            cursor: pointer;
+            background: rgba(20, 20, 20, 0.6);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 24px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
             overflow: hidden;
-            /* BOLLE GLASS EFFECT RIPRISTINATO */
-            background: var(--bg-panel);
-            border: 1px solid var(--border-glass);
-            border-top: 1px solid var(--border-highlight);
-            border-radius: var(--radius-lg);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
-            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
         }
-        .date-card:hover {
-            transform: translateY(-8px);
-            background: var(--bg-panel-hover);
-            border-color: rgba(255,255,255,0.25);
-            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.7);
+        .edit-item-new:hover {
+            transform: translateX(4px);
         }
-        .date-card::before {
-            content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 4px;
-            background: var(--team-color, #444);
-            box-shadow: 0 0 20px var(--team-color);
+        
+        /* Status Glow Indicators */
+        .status-glow-queue {
+            border-left: 4px solid var(--danger);
+            background: linear-gradient(90deg, rgba(239,68,68,0.05) 0%, transparent 100%);
+            box-shadow: -10px 0 20px -5px rgba(239,68,68,0.15);
         }
-        .date-card h3 {
-            font-size: 24px; margin: 0 0 8px 0; font-weight: 700; letter-spacing: -0.5px;
+        .status-glow-waiting {
+            border-left: 4px solid var(--warning);
+            background: linear-gradient(90deg, rgba(245,158,11,0.05) 0%, transparent 100%);
+            box-shadow: -10px 0 20px -5px rgba(245,158,11,0.15);
         }
+        .status-glow-ready {
+            border-left: 4px solid var(--success);
+            background: linear-gradient(90deg, rgba(16,185,129,0.05) 0%, transparent 100%);
+            box-shadow: -10px 0 20px -5px rgba(16,185,129,0.15);
+        }
+        .status-glow-manual {
+            border-left: 4px solid var(--purple);
+            background: linear-gradient(90deg, rgba(139,92,246,0.05) 0%, transparent 100%);
+            box-shadow: -10px 0 20px -5px rgba(139,92,246,0.15);
+        }
+
+        .neon-status-text {
+            font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;
+            margin-top: 12px; display: inline-block; padding: 4px 12px; border-radius: 20px;
+        }
+        
+        .job-title { font-size: 20px; font-weight: 700; color: white; margin-bottom: 6px; letter-spacing: -0.5px; }
+        .job-date { font-weight: 400; color: var(--text-secondary); font-size: 16px; margin-left: 8px; }
+        .job-meta { font-size: 13px; color: #888; display: flex; align-items: center; gap: 8px; }
+        .redazione-tag { font-weight: 700; text-transform: uppercase; font-size: 11px; padding: 2px 6px; border-radius: 4px; border: 1px solid currentColor; }
 
         /* --- LISTS --- */
-        .slot-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 24px;
-            border-bottom: 1px solid var(--border-glass);
-            transition: background 0.2s;
-        }
-        .slot-item:hover { background: rgba(255,255,255,0.02); }
-        .slot-time {
-            font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 500;
-            color: var(--text-secondary); width: 80px;
-        }
-        .slot-booked .slot-time { color: white; font-weight: 700; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+        .slot-item { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--border-glass); }
+        .slot-time { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 500; color: var(--text-secondary); width: 80px; }
         .slot-booked { border-left: 2px solid var(--danger); background: linear-gradient(90deg, rgba(239,68,68,0.03) 0%, transparent 50%); }
         .slot-free { border-left: 2px solid var(--success); }
 
         /* --- TABLES (NOTES) --- */
-        .note-header {
-            display: grid; grid-template-columns: 80px 2fr 1fr 1fr 120px 140px; gap: 24px;
-            padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
-        }
-        .note-item {
-            display: grid; grid-template-columns: 80px 2fr 1fr 1fr 120px 140px; gap: 24px;
-            padding: 24px; border-bottom: 1px solid var(--border-glass); align-items: center;
-        }
+        .note-header { display: grid; grid-template-columns: 80px 2fr 1.5fr 1fr 120px 140px; gap: 24px; padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .note-item { display: grid; grid-template-columns: 80px 2fr 1.5fr 1fr 120px 140px; gap: 24px; padding: 24px; border-bottom: 1px solid var(--border-glass); align-items: center; }
         .note-item:hover { background: rgba(255,255,255,0.02); }
 
-        /* --- HEADER --- */
-        header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid var(--border-glass); }
-        .header-title { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin: 0; color: white; line-height: 1; }
-        .header-subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 8px; font-weight: 400; }
-
-        /* --- ADMIN TOOLS --- */
-        #admin-tools {
-            background: linear-gradient(180deg, rgba(245, 158, 11, 0.05) 0%, rgba(0,0,0,0) 100%);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-            margin-bottom: 48px;
-        }
-
         /* --- MODALS --- */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); z-index: 1000;
-            justify-content: center; align-items: center; padding: 20px;
-        }
-        .modal-box {
-            background: #121214; border: 1px solid var(--border-highlight);
-            box-shadow: 0 40px 80px rgba(0,0,0,0.8);
-            padding: 40px; border-radius: 24px; width: 100%; max-width: 640px;
-            animation: modalIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-box { background: #121214; border: 1px solid var(--border-highlight); box-shadow: 0 40px 80px rgba(0,0,0,0.8); padding: 40px; border-radius: 24px; width: 100%; max-width: 640px; animation: modalIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes modalIn { from { opacity: 0; transform: scale(0.96) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-        /* --- COPY BOX --- */
-        .copy-box {
-            background: #000; border: 1px solid #333; color: #bbb;
-            font-family: 'JetBrains Mono', monospace; font-size: 12px;
-            padding: 14px; border-radius: 8px; cursor: pointer; transition: 0.2s;
-        }
+        /* --- OTHER --- */
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .copy-box { background: #000; border: 1px solid #333; color: #bbb; font-family: 'JetBrains Mono'; font-size: 12px; padding: 14px; border-radius: 8px; cursor: pointer; transition: 0.2s; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
         .copy-box:hover { border-color: var(--primary); color: white; background: rgba(59, 130, 246, 0.05); }
-
-        /* --- BADGES --- */
-        .badge { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
-        .status-queue { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
-        .status-waiting { background: rgba(245, 158, 11, 0.1); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.2); }
-        .status-ready { background: rgba(16, 185, 129, 0.1); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); }
-        .status-manual { background: rgba(139, 92, 246, 0.1); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.2); }
-        .status-unprocessed { background: rgba(255, 255, 255, 0.05); color: #999; border: 1px dashed #666; }
 
         @media (max-width: 900px) {
             .note-header { display: none; }
-            .note-item { grid-template-columns: 1fr; gap: 12px; border: 1px solid var(--border-glass); border-radius: 12px; margin-bottom: 16px; padding: 20px; background: rgba(255,255,255,0.02); }
-            header { flex-direction: column; align-items: flex-start; gap: 20px; }
+            .note-item { grid-template-columns: 1fr; gap: 12px; padding: 20px; border: 1px solid var(--border-glass); border-radius: 12px; margin-bottom: 16px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- VISTA LOGIN -->
+    <!-- LOGIN -->
     <div id="login-view" class="view active">
         <div class="glass-panel login-card">
-            <div class="brand-container">
-                <div class="brand-title">Oltre la Media</div>
-                <div class="brand-subtitle-main">Production Suite</div>
-            </div>
-            <p style="color: var(--text-secondary); margin-bottom: 40px; font-size: 13px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.5px;">piattaforma di gestione registrazioni e montaggi audio-video</p>
-            
+            <h1 style="font-size:32px; font-weight:800; margin-bottom:4px; color:white;">Oltre la Media</h1>
+            <div style="font-size:16px; font-weight:600; text-transform:uppercase; letter-spacing:3px; color:#aaa; margin-bottom:40px;">Production Suite</div>
             <form onsubmit="event.preventDefault(); handleLogin();">
                 <div class="input-group">
                     <label class="input-label">Identificativo</label>
@@ -412,112 +202,88 @@
                     <label class="input-label">Password</label>
                     <input type="password" id="password" placeholder="••••••••">
                 </div>
-                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:12px; height:48px;">Accedi al sistema</button>
+                <button type="submit" class="btn btn-primary" style="width:100%;">Accedi al sistema</button>
             </form>
-            <div id="login-msg" style="color: var(--danger); margin-top: 24px; font-size:13px; font-weight:600; text-align:center; min-height:20px;"></div>
-            
-            <div style="margin-top:48px; border-top:1px solid rgba(255,255,255,0.05); padding-top:24px; display:flex; justify-content:space-between; align-items:center;">
-                <div style="font-size:11px; color:var(--text-muted);">Build 3.2.3 Pro</div>
-                <div style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:8px;">
-                    Status <span id="db-status" style="width:6px; height:6px; background:#444; border-radius:50%; display:inline-block; box-shadow:0 0 5px #444;"></span>
-                </div>
+            <div id="login-msg" style="color:var(--danger); margin-top:24px; font-size:13px; font-weight:600; min-height:20px;"></div>
+            <div style="margin-top:48px; border-top:1px solid rgba(255,255,255,0.05); padding-top:24px; font-size:11px; color:#555;">
+                System v4.0.1 &bull; Status <span id="db-status" style="width:6px; height:6px; background:#444; border-radius:50%; display:inline-block;"></span>
             </div>
         </div>
     </div>
 
-    <!-- VISTA DASHBOARD -->
+    <!-- DASHBOARD -->
     <div id="dashboard-view" class="view">
-        <header>
-            <div class="header-left">
-                <h1 class="header-title">Dashboard</h1>
-                <div class="header-subtitle">Bentornato, <span id="user-welcome" style="color:white; font-weight:600;"></span></div>
+        <header style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:40px; padding-bottom:20px; border-bottom:1px solid var(--border-glass);">
+            <div>
+                <h1 style="font-size:32px; font-weight:800; margin:0; color:white;">Dashboard</h1>
+                <div style="font-size:14px; color:var(--text-secondary); margin-top:8px;">Bentornato, <span id="user-welcome" style="color:white; font-weight:600;"></span></div>
             </div>
             <div style="display:flex; gap:12px; align-items:center;">
-                <span id="user-badge" class="badge" style="background:#222; color:#888; margin-right:12px; border:1px solid #333;"></span>
-                <button class="btn btn-secondary" onclick="openEditingQueue()" style="color: #f87171; border-color: rgba(239,68,68,0.2);">
-                    <span style="margin-right:8px;">●</span> Coda Montaggi
-                </button>
+                <button class="btn btn-secondary" onclick="openEditingQueue()" style="color:#f87171; border-color:rgba(239,68,68,0.2);">● Coda Montaggi</button>
                 <button class="btn btn-secondary" onclick="handleLogout()">Logout</button>
             </div>
         </header>
 
-        <!-- ADMIN TOOLS -->
-        <div id="admin-tools" class="glass-panel" style="display:none; padding:32px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; border-bottom:1px solid rgba(245,158,11,0.15); padding-bottom:20px;">
+        <!-- ADMIN PANEL -->
+        <div id="admin-tools" class="glass-panel" style="display:none; padding:32px; margin-bottom:48px; background:linear-gradient(180deg, rgba(245, 158, 11, 0.05) 0%, transparent 100%); border-color:rgba(245, 158, 11, 0.2);">
+            <div style="display:flex; justify-content:space-between; margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid rgba(245,158,11,0.15);">
                 <div style="font-size:12px; font-weight:800; color:#fbbf24; text-transform:uppercase; letter-spacing:1px;">Admin Control Center</div>
                 <div style="display:flex; gap:8px;">
                     <button class="btn btn-secondary" onclick="openUserManager()" style="height:32px; font-size:11px;">👥 Utenti</button>
                     <button class="btn btn-secondary" onclick="openSettings()" style="height:32px; font-size:11px;">⚙️ Config</button>
                     <button class="btn btn-secondary" onclick="openArchive()" style="height:32px; font-size:11px;">📂 Archivio</button>
-                    <button class="btn btn-secondary" onclick="openProductionNotes()" style="height:32px; font-size:11px; border-color: var(--success); color: var(--success);">📋 Regia</button>
+                    <button class="btn btn-secondary" onclick="openProductionNotes()" style="height:32px; font-size:11px; border-color:var(--success); color:var(--success);">📋 Regia</button>
                 </div>
             </div>
-            
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:24px; align-items:end;">
-                <div>
-                    <label class="input-label">Data Slot</label>
-                    <input type="date" id="new-date">
-                </div>
-                <div>
-                    <label class="input-label">Redazione Assegnata</label>
-                    <select id="new-team"></select>
-                </div>
+                <div><label class="input-label">Data Slot</label><input type="date" id="new-date"></div>
+                <div><label class="input-label">Redazione</label><select id="new-team"></select></div>
                 <div style="grid-column: span 2;">
                     <label class="input-label">Range Orario</label>
-                    <div style="display:flex; gap:12px; align-items:center;">
-                        <input type="time" id="start-time" value="09:00">
-                        <span style="color:var(--text-muted);">→</span>
-                        <input type="time" id="end-time" value="18:00">
-                    </div>
+                    <div style="display:flex; gap:12px;"><input type="time" id="start-time" value="09:00"><input type="time" id="end-time" value="18:00"></div>
                 </div>
                 <button class="btn btn-primary" onclick="createAllocation()">+ Genera Slot</button>
             </div>
         </div>
 
-        <h2 style="font-size:16px; font-weight:700; margin-bottom:24px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:1px;">Calendario Attivo</h2>
         <div id="grid-dates" class="grid-container"></div>
     </div>
 
-    <!-- VISTA SLOT -->
+    <!-- SLOTS VIEW -->
     <div id="slots-view" class="view">
-        <header>
-            <div style="display:flex; gap:12px; align-items:center;">
+        <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:32px;">
+            <div style="display:flex; gap:12px;">
                 <button class="btn btn-secondary" onclick="goToDashboard()">← Dashboard</button>
                 <div id="slot-admin-actions" style="display:none; gap:8px;"></div>
             </div>
             <div style="text-align:right;">
-                <div id="slot-date-title" style="font-weight:800; font-size:24px; color:white; letter-spacing:-0.5px;"></div>
-                <div id="slot-team-subtitle" style="font-size:14px; color: var(--primary); font-weight:600; margin-top:4px;"></div>
+                <div id="slot-date-title" style="font-weight:800; font-size:24px; color:white;"></div>
+                <div id="slot-team-subtitle" style="font-size:14px; color:var(--primary); font-weight:600; margin-top:4px;"></div>
             </div>
         </header>
         <div id="slots-container" class="glass-panel" style="padding:0;"></div>
     </div>
 
-    <!-- VISTA NOTE PRODUZIONE -->
+    <!-- PRODUCTION NOTES (REGIA) -->
     <div id="production-notes-view" class="view">
-        <header>
+        <header style="margin-bottom:32px;">
             <button class="btn btn-secondary" onclick="goToDashboard()">← Dashboard</button>
-            <h1 class="header-title" style="margin-left:32px;">Scaletta Regia (Live)</h1>
+            <h1 style="display:inline-block; margin-left:24px; font-size:24px; font-weight:800;">Scaletta Regia (Live)</h1>
         </header>
         <div class="glass-panel" style="padding:0; overflow:hidden;">
             <div class="note-header">
-                <div>On Air</div>
-                <div>Ospite / Azienda</div>
-                <div>Format</div>
-                <div>Giornalista</div>
-                <div style="text-align:center;">Setup</div>
-                <div style="text-align:right;">Action</div>
+                <div>On Air</div><div>Ospite / Azienda</div><div>Format / Redazione</div><div>Giornalista</div><div style="text-align:center;">Setup</div><div style="text-align:right;">Action</div>
             </div>
             <div id="notes-list"></div>
         </div>
     </div>
 
-    <!-- VISTA CODA MONTAGGIO -->
+    <!-- EDITING QUEUE -->
     <div id="editing-queue-view" class="view">
-        <header>
-            <div class="header-left">
-                <button class="btn btn-secondary" style="margin-bottom:12px; width:fit-content;" onclick="goToDashboard()">← Dashboard</button>
-                <h1 class="header-title">Coda di Montaggio</h1>
+        <header style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:40px;">
+            <div>
+                <button class="btn btn-secondary" style="margin-bottom:12px;" onclick="goToDashboard()">← Dashboard</button>
+                <h1 style="font-size:32px; font-weight:800; margin:0; color:white;">Coda di Montaggio</h1>
             </div>
             <div style="display:flex; gap:10px;">
                 <button class="btn btn-primary" onclick="openManualJobModal()">+ Nuovo Job</button>
@@ -527,95 +293,73 @@
         <div id="editing-list"></div>
     </div>
 
-    <!-- VISTA ARCHIVIO MONTAGGIO -->
+    <!-- ARCHIVES -->
     <div id="editing-archive-view" class="view">
-        <header>
-            <button class="btn btn-secondary" onclick="openEditingQueue()">← Torna alla Coda</button>
-            <h1 class="header-title" style="margin-left:32px;">Archivio Completati</h1>
-        </header>
+        <header style="margin-bottom:32px;"><button class="btn btn-secondary" onclick="openEditingQueue()">← Torna alla Coda</button> <h1 style="display:inline; margin-left:20px;">Archivio Completati</h1></header>
         <div id="editing-archive-list"></div>
     </div>
-
-    <!-- VISTA ARCHIVIO REGISTRAZIONI -->
     <div id="archive-view" class="view">
-        <header>
-            <button class="btn btn-secondary" onclick="goToDashboard()">← Indietro</button>
-            <h1 class="header-title" style="margin-left:32px;">Archivio Calendario</h1>
-        </header>
+        <header style="margin-bottom:32px;"><button class="btn btn-secondary" onclick="goToDashboard()">← Indietro</button> <h1 style="display:inline; margin-left:20px;">Archivio Calendario</h1></header>
         <div id="grid-archive" class="grid-container"></div>
     </div>
 
-    <!-- MODALE PRENOTAZIONE -->
+    <!-- MODALS -->
     <div id="booking-modal" class="modal-overlay">
         <div class="modal-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:32px; padding-bottom:20px; border-bottom:1px solid var(--border-glass);">
-                <h3 style="margin:0; font-size:22px; color:white; font-weight:700;"><span id="modal-title-action">Prenotazione</span> <span id="modal-time" style="color:var(--primary); font-family:'JetBrains Mono'; margin-left:8px;"></span></h3>
-                <button onclick="closeModal()" style="background:none; border:none; color:var(--text-muted); font-size:24px; cursor:pointer; transition:0.2s;">&times;</button>
+            <div style="display:flex; justify-content:space-between; margin-bottom:32px; padding-bottom:20px; border-bottom:1px solid var(--border-glass);">
+                <h3 style="margin:0; font-size:22px;">Prenotazione <span id="modal-time" style="color:var(--primary); font-family:'JetBrains Mono'; margin-left:8px;"></span></h3>
+                <button onclick="closeModal()" style="background:none; border:none; color:#666; font-size:24px; cursor:pointer;">&times;</button>
             </div>
-            
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">
-                <div class="input-group"><label class="input-label">Nome Ospite</label><input type="text" id="b-name" placeholder="Nome Cognome"></div>
-                <div class="input-group"><label class="input-label">Azienda</label><input type="text" id="b-company" placeholder="Nome Azienda"></div>
+                <div class="input-group"><label class="input-label">Nome Ospite</label><input type="text" id="b-name"></div>
+                <div class="input-group"><label class="input-label">Azienda</label><input type="text" id="b-company"></div>
             </div>
-            <div class="input-group"><label class="input-label">Job Title</label><input type="text" id="b-job" placeholder="Ruolo"></div>
-            
+            <div class="input-group"><label class="input-label">Job Title</label><input type="text" id="b-job"></div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">
                 <div class="input-group"><label class="input-label">Format</label><select id="b-format"><option value="">Seleziona...</option></select></div>
                 <div class="input-group"><label class="input-label">Modalità</label><select id="b-type"><option value="Presenza">In Studio</option><option value="Remoto">Remoto</option></select></div>
             </div>
-
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">
                 <div class="input-group"><label class="input-label">Giornalista</label><select id="b-jour"><option value="">Seleziona...</option></select></div>
                 <div class="input-group"><label class="input-label">Commerciale</label><select id="b-sales"><option value="">Seleziona...</option></select></div>
             </div>
-            
-            <div class="input-group"><label class="input-label">Note Aggiuntive</label><textarea id="b-note" rows="2"></textarea></div>
-            
+            <div class="input-group"><label class="input-label">Note</label><textarea id="b-note" rows="2"></textarea></div>
             <div style="display:flex; justify-content:space-between; margin-top:40px; border-top:1px solid var(--border-glass); padding-top:24px;">
                 <button id="btn-delete" type="button" class="btn btn-danger" style="display:none;" onclick="deleteFromModal()">Elimina Slot</button>
                 <div style="display:flex; gap:12px; margin-left:auto;">
                     <button type="button" class="btn btn-secondary" onclick="closeModal()">Annulla</button>
-                    <button type="button" class="btn btn-primary" onclick="saveBooking()">Conferma e Salva</button>
+                    <button type="button" class="btn btn-primary" onclick="saveBooking()">Salva</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- NUOVA MODALE JOB MANUALE -->
+    <!-- MANUAL JOB MODAL -->
     <div id="manual-job-modal" class="modal-overlay">
         <div class="modal-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:32px; padding-bottom:20px; border-bottom:1px solid var(--border-glass);">
-                <h3 style="margin:0; font-size:22px; color:white; font-weight:700;">Nuovo Lavoro Extra</h3>
-                <button onclick="document.getElementById('manual-job-modal').style.display='none'" style="background:none; border:none; color:var(--text-muted); font-size:24px; cursor:pointer; transition:0.2s;">&times;</button>
-            </div>
-            
+            <h3 style="margin-top:0;">Nuovo Lavoro Extra</h3>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">
-                <div class="input-group"><label class="input-label">Ospite / Titolo</label><input type="text" id="m-name" placeholder="Descrizione o Nome"></div>
-                <div class="input-group"><label class="input-label">Azienda / Cliente</label><input type="text" id="m-company"></div>
+                <div class="input-group"><label class="input-label">Ospite / Titolo</label><input type="text" id="m-name"></div>
+                <div class="input-group"><label class="input-label">Azienda</label><input type="text" id="m-company"></div>
             </div>
-            
-            <div class="input-group"><label class="input-label">Job Title</label><input type="text" id="m-job" placeholder="Ruolo"></div>
-
+            <div class="input-group"><label class="input-label">Job Title</label><input type="text" id="m-job"></div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">
                 <div class="input-group"><label class="input-label">Format</label><select id="m-format"><option value="">Seleziona...</option></select></div>
                 <div class="input-group"><label class="input-label">Giornalista</label><select id="m-jour"><option value="">Seleziona...</option></select></div>
             </div>
-            
-            <div class="input-group"><label class="input-label">Note di Montaggio</label><textarea id="m-note" rows="3"></textarea></div>
-            
-            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:40px; border-top:1px solid var(--border-glass); padding-top:24px;">
+            <div class="input-group"><label class="input-label">Note Montaggio</label><textarea id="m-note" rows="3"></textarea></div>
+            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:32px;">
                 <button type="button" class="btn btn-secondary" onclick="document.getElementById('manual-job-modal').style.display='none'">Annulla</button>
                 <button type="button" class="btn btn-primary" onclick="saveManualJob()">Aggiungi alla Coda</button>
             </div>
         </div>
     </div>
 
-    <!-- MODALE NOTE PRODUZIONE -->
+    <!-- PROD NOTE MODAL -->
     <div id="prod-note-modal" class="modal-overlay">
         <div class="modal-box">
-            <h3 style="margin-top:0; color:white; font-size:20px;">Note di Regia / Tecniche</h3>
-            <p style="color:var(--text-secondary); font-size:14px; margin-bottom:24px; line-height:1.5;">Inserisci istruzioni per il montaggio o note live per l'operatore.</p>
-            <textarea id="prod-note-text" rows="6" placeholder="Es: Tagliare inizio, problema audio al min 12..." style="width:100%; margin-bottom:24px; background:#08080a;"></textarea>
+            <h3>Note di Regia / Tecniche</h3>
+            <textarea id="prod-note-text" rows="6" style="width:100%; margin-bottom:24px;"></textarea>
             <div style="display:flex; justify-content:flex-end; gap:12px;">
                 <button class="btn btn-secondary" onclick="document.getElementById('prod-note-modal').style.display='none'">Annulla</button>
                 <button class="btn btn-primary" onclick="saveProdNote()">Salva Nota</button>
@@ -623,46 +367,46 @@
         </div>
     </div>
 
-    <!-- MODALE GESTIONE UTENTI -->
+    <!-- USERS MODAL -->
     <div id="users-modal" class="modal-overlay">
         <div class="modal-box" style="max-width:900px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:24px; border-bottom:1px solid var(--border-glass); padding-bottom:16px;">
-                <h3 style="margin:0; color:white;">Gestione Team e Permessi</h3>
-                <button class="btn btn-secondary" onclick="closeUserManager()">Chiudi</button>
-            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:24px;"><h3>Gestione Utenti</h3><button class="btn btn-secondary" onclick="closeUserManager()">Chiudi</button></div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:32px;">
-                <div style="background:rgba(255,255,255,0.02); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-glass);">
-                    <h4 style="margin:0 0 20px 0; font-size:11px; text-transform:uppercase; color:var(--text-muted); letter-spacing:1px; font-weight:800;">Dati Utente / Permessi</h4>
-                    <div class="input-group"><label class="input-label">Username</label><input type="text" id="u-user" placeholder="Nuovo o esistente per modifica"></div>
-                    <div class="input-group"><label class="input-label">Password</label><input type="text" id="u-pass" placeholder="Lascia vuoto per non cambiare"></div>
+                <div>
+                    <div class="input-group"><label class="input-label">Username</label><input type="text" id="u-user"></div>
+                    <div class="input-group"><label class="input-label">Password</label><input type="text" id="u-pass"></div>
                     <div class="input-group"><label class="input-label">Nome Visualizzato</label><input type="text" id="u-label"></div>
-                    <div class="input-group"><label class="input-label">Colore Team</label><input type="color" id="u-color" value="#3b82f6" style="height:48px; cursor:pointer; width:100%;"></div>
-                    
-                    <div class="input-group">
-                        <label class="input-label">Visualizza Altre Redazioni (Oltre alla propria)</label>
-                        <div id="permissions-container" class="checkbox-list"></div>
-                    </div>
-
-                    <button class="btn btn-primary" onclick="saveUserConfig()" style="width:100%;">Salva / Aggiorna Utente</button>
+                    <div class="input-group"><label class="input-label">Colore Team</label><input type="color" id="u-color" style="height:48px; width:100%;"></div>
+                    <div class="input-group"><label class="input-label">Permessi (Altre Redazioni)</label><div id="permissions-container" class="checkbox-list"></div></div>
+                    <button class="btn btn-primary" onclick="saveUserConfig()" style="width:100%;">Salva Utente</button>
                 </div>
-                <div style="background:rgba(255,255,255,0.02); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-glass); max-height:600px; overflow-y:auto;">
-                    <h4 style="margin:0 0 20px 0; font-size:11px; text-transform:uppercase; color:var(--text-muted); letter-spacing:1px; font-weight:800;">Utenti Attivi (Clicca per modificare)</h4>
+                <div style="max-height:600px; overflow-y:auto;">
+                    <h4 style="margin:0 0 20px 0; font-size:11px; text-transform:uppercase;">Utenti Attivi</h4>
                     <div id="users-list-container"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODALE IMPOSTAZIONI -->
+    <!-- SETTINGS MODAL -->
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-box" style="max-width:960px; max-height:90vh; overflow-y:auto;">
-            <h3 style="margin:0 0 32px 0; color:white; font-size:24px;">Configurazione Sistema</h3>
+            <h3>Configurazione Sistema</h3>
             <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:32px;">
-                <div><label class="input-label">Redazioni (ID)</label><textarea id="set-teams" rows="8"></textarea></div>
-                <div><label class="input-label">Formats</label><textarea id="set-formats" rows="8"></textarea></div>
-                <div><label class="input-label">Giornalisti</label><textarea id="set-jours" rows="8"></textarea></div>
-                <div><label class="input-label">Commerciali</label><textarea id="set-sales" rows="8"></textarea></div>
+                <div><label class="input-label">Redazioni (ID)</label><textarea id="set-teams" rows="6"></textarea></div>
+                <div><label class="input-label">Formats (Lista)</label><textarea id="set-formats" rows="6"></textarea></div>
+                <div><label class="input-label">Giornalisti</label><textarea id="set-jours" rows="6"></textarea></div>
+                <div><label class="input-label">Commerciali</label><textarea id="set-sales" rows="6"></textarea></div>
             </div>
+            
+            <!-- NEW SECTION: FORMAT MAPPING -->
+            <div style="margin-top:32px; border-top:1px solid var(--border-glass); padding-top:24px;">
+                <h4 style="color:white; margin-bottom:16px;">Assegnazione Redazioni ai Format</h4>
+                <div style="background:rgba(255,255,255,0.02); padding:20px; border-radius:12px; border:1px solid var(--border-glass);">
+                    <div id="format-mappings-container" style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;"></div>
+                </div>
+            </div>
+
             <div style="display:flex; justify-content:flex-end; gap:16px; margin-top:32px; border-top:1px solid var(--border-glass); padding-top:24px;">
                 <button class="btn btn-secondary" onclick="closeSettings()">Annulla</button>
                 <button class="btn btn-primary" onclick="saveSettings()">Salva Configurazione</button>
@@ -670,46 +414,28 @@
         </div>
     </div>
 
-    <!-- MODALE MODIFICA ALLOCAZIONE -->
+    <!-- EDIT ALLOC MODAL -->
     <div id="edit-alloc-modal" class="modal-overlay">
         <div class="modal-box" style="max-width:440px;">
-            <h3 style="margin-top:0; color:white;">Modifica Data/Team</h3>
-            <p style="font-size:14px; color:var(--text-secondary); margin-bottom:24px;">Spostando la data, gli slot prenotati verranno mantenuti.</p>
-            <div class="input-group">
-                <label class="input-label">Nuova Data</label>
-                <input type="date" id="edit-alloc-date">
-            </div>
-            <div class="input-group">
-                <label class="input-label">Nuova Redazione</label>
-                <select id="edit-alloc-team"></select>
-            </div>
+            <h3>Modifica Data/Team</h3>
+            <div class="input-group"><label class="input-label">Nuova Data</label><input type="date" id="edit-alloc-date"></div>
+            <div class="input-group"><label class="input-label">Nuova Redazione</label><select id="edit-alloc-team"></select></div>
             <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:32px;">
                 <button class="btn btn-secondary" onclick="document.getElementById('edit-alloc-modal').style.display='none'">Annulla</button>
-                <button class="btn btn-primary" onclick="saveEditAlloc()">Salva Modifiche</button>
+                <button class="btn btn-primary" onclick="saveEditAlloc()">Salva</button>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPT (LOGICA ORIGINALE MANTENUTA E ADATTATA) -->
+    <!-- SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const manualConfig = {
-            apiKey: "AIzaSyAh6TX5OhGoGSYLnK2fgxv5qqkQStL81f4",
-            authDomain: "booking-redazioni-cb450.firebaseapp.com",
-            projectId: "booking-redazioni-cb450",
-            storageBucket: "booking-redazioni-cb450.firebasestorage.app",
-            messagingSenderId: "201284623978",
-            appId: "1:201284623978:web:0f7b3c93a2993da9883413",
-            measurementId: "G-CEY9K09ZQY"
-        };
-
-        let firebaseConfig;
-        let db;
-        let auth;
-        let isFirebaseActive = false;
+        // Configurazione
+        const manualConfig = { apiKey: "AIzaSyAh6TX5OhGoGSYLnK2fgxv5qqkQStL81f4", authDomain: "booking-redazioni-cb450.firebaseapp.com", projectId: "booking-redazioni-cb450", storageBucket: "booking-redazioni-cb450.firebasestorage.app", messagingSenderId: "201284623978", appId: "1:201284623978:web:0f7b3c93a2993da9883413", measurementId: "G-CEY9K09ZQY" };
+        let firebaseConfig, db, auth, isFirebaseActive = false;
 
         try {
             if (typeof __firebase_config !== 'undefined') {
@@ -722,65 +448,76 @@
                 window.getCollectionRef = () => collection(db, 'allocations');
                 window.getSettingsRef = () => collection(db, 'settings');
             }
-
-            if (firebaseConfig.apiKey) {
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                const initAuth = async () => {
-                    try {
-                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
-                        else await signInAnonymously(auth);
-                    } catch (error) { console.error("Auth Failed", error); }
-                };
-                initAuth();
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        isFirebaseActive = true;
-                        const statusEl = document.getElementById('db-status');
-                        statusEl.style.background = "#10b981"; // Green light
-                        statusEl.style.boxShadow = "0 0 10px #10b981";
-                        startRealtimeListener();
-                        loadSettings();
-                        loadUsers();
-                    }
-                });
-            }
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            
+            const initAuth = async () => {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
+                else await signInAnonymously(auth);
+            };
+            initAuth();
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    isFirebaseActive = true;
+                    document.getElementById('db-status').style.background = "#10b981";
+                    startRealtimeListener();
+                    loadSettings();
+                    loadUsers();
+                }
+            });
         } catch (e) { console.error("Init Error", e); }
 
+        // State
         window.DB = { allocations: [] }; 
-        window.SETTINGS = { formats: [], journalists: [], sales: [], teams: [] };
+        window.SETTINGS = { formats: [], journalists: [], sales: [], teams: [], formatMappings: {} }; // Added mappings
         window.USERS = {};
         window.SESSION = { user: null, role: null };
         window.TEMP = { allocId: null, slotTime: null, editTargetId: null };
 
+        // Helpers
         function getLocalDateString(offsetDays = 0) {
             const d = new Date();
             d.setDate(d.getDate() + offsetDays);
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
+            
+            // Format strictly to Europe/Rome YYYY-MM-DD
+            // Using 'en-CA' locale because it guarantees YYYY-MM-DD format regardless of client locale
+            const fmt = new Intl.DateTimeFormat('en-CA', { 
+                timeZone: 'Europe/Rome', 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit' 
+            });
+            return fmt.format(d);
+        }
+        function formatDateFriendly(dateStr) {
+            if(!dateStr || dateStr === '9999-99-99') return '';
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
         }
 
+        // Listener
         function startRealtimeListener() {
             if(!isFirebaseActive) return;
             onSnapshot(window.getCollectionRef(), (snapshot) => {
-                const loaded = [];
-                snapshot.forEach((doc) => loaded.push({ id: doc.id, ...doc.data() }));
+                const loaded = []; snapshot.forEach((doc) => loaded.push({ id: doc.id, ...doc.data() }));
                 window.DB.allocations = loaded;
-                
-                if(document.getElementById('dashboard-view').classList.contains('active')) loadDashboard();
-                else if (document.getElementById('production-notes-view').classList.contains('active')) renderProductionNotes();
-                else if (document.getElementById('editing-queue-view').classList.contains('active')) renderEditingQueue();
-                else if (document.getElementById('editing-archive-view').classList.contains('active')) renderEditingArchive();
-                else if (document.getElementById('slots-view').classList.contains('active') && window.TEMP.allocId) {
-                    const current = window.DB.allocations.find(a => a.id === window.TEMP.allocId);
-                    if(current) renderSlots(current); else goToDashboard();
-                }
+                refreshCurrentView();
             });
         }
 
+        function refreshCurrentView() {
+            if(document.getElementById('dashboard-view').classList.contains('active')) loadDashboard();
+            else if (document.getElementById('production-notes-view').classList.contains('active')) renderProductionNotes();
+            else if (document.getElementById('editing-queue-view').classList.contains('active')) renderEditingQueue();
+            else if (document.getElementById('editing-archive-view').classList.contains('active')) renderEditingArchive();
+            else if (document.getElementById('slots-view').classList.contains('active') && window.TEMP.allocId) {
+                const current = window.DB.allocations.find(a => a.id === window.TEMP.allocId);
+                if(current) renderSlots(current); else goToDashboard();
+            }
+        }
+
+        // Auth
         window.handleLogin = () => {
             const user = document.getElementById('username').value.trim().toLowerCase().replace(/\s/g, ''); 
             const pass = document.getElementById('password').value;
@@ -794,237 +531,120 @@
                 document.getElementById('login-msg').innerText = "Credenziali non valide.";
             }
         };
-
         window.handleLogout = () => location.reload();
+        function switchView(id) { document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); setTimeout(() => document.getElementById(id).classList.add('active'), 50); }
 
-        function switchView(id) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            setTimeout(() => {
-                document.getElementById(id).classList.add('active');
-            }, 50);
-        }
-
+        // Dashboard
         function loadDashboard() {
             const userData = window.USERS[window.SESSION.user];
             document.getElementById('user-welcome').innerText = userData ? userData.label : window.SESSION.user;
-            document.getElementById('user-badge').innerText = window.SESSION.role === 'ADMIN' ? 'ADMIN' : 'EDITOR';
             document.getElementById('admin-tools').style.display = window.SESSION.role === 'ADMIN' ? 'block' : 'none';
-            
-            if (window.SESSION.role === 'ADMIN') {
-                populateTeamSelect();
-            }
-            
+            if (window.SESSION.role === 'ADMIN') populateTeamSelect();
             renderGrid();
         }
 
         function renderGrid() {
-            const grid = document.getElementById('grid-dates');
-            grid.innerHTML = '';
+            const grid = document.getElementById('grid-dates'); grid.innerHTML = '';
             const today = getLocalDateString(0); 
             const myAllocations = window.DB.allocations.filter(a => {
-                // Filter out manual jobs container and archived days
                 if(a.id === 'manual_jobs' || a.archived) return false;
-                
                 if (window.SESSION.role === 'ADMIN') return true;
-                
-                // VISIBILITY LOGIC
                 const currentUserData = window.USERS[window.SESSION.user];
-                const allowedTeams = currentUserData?.allowedTeams || [];
-                return a.team === window.SESSION.user || allowedTeams.includes(a.team);
-
-            }).filter(a => a.date >= today); // Mostra solo da oggi in poi
+                return a.team === window.SESSION.user || (currentUserData?.allowedTeams || []).includes(a.team);
+            }).filter(a => a.date >= today);
             myAllocations.sort((a, b) => new Date(a.date) - new Date(b.date));
-            
             if (myAllocations.length === 0) grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px; color:#555;">Nessuna disponibilità pianificata.</div>';
-            
             myAllocations.forEach(alloc => createCard(alloc, grid, 'dashboard'));
         }
 
         function createCard(alloc, container, type = 'dashboard') {
             const teamData = window.USERS[alloc.team] || { label: alloc.team, color: '#333' };
             const d = new Date(alloc.date);
-            const month = d.toLocaleString('it-IT', { month: 'long' });
-            const capMonth = month.charAt(0).toUpperCase() + month.slice(1);
-            const dateStr = `${d.getDate()} ${capMonth} ${d.getFullYear()}`;
-            
-            // Check if past date
-            const todayStr = getLocalDateString(0);
-            const isPast = alloc.date < todayStr;
-
+            const dateStr = d.toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
+            const isPast = alloc.date < getLocalDateString(0);
             const card = document.createElement('div');
             card.className = `date-card`;
             card.style.setProperty('--team-color', teamData.color);
-            
             card.onclick = () => window.openDetails(alloc.id);
 
             let buttons = '';
             if(window.SESSION.role === 'ADMIN') {
                 if(type === 'archive') {
-                    // ARCHIVE VIEW: Show Delete Button
-                    buttons = `
-                        <div style="position:absolute; top:20px; right:20px; display:flex; gap:10px; z-index: 20;">
-                            <button onclick="event.stopPropagation(); deleteAlloc('${alloc.id}')" style="background:rgba(239,68,68,0.2); border:1px solid rgba(239,68,68,0.4); color:#ffaaaa; cursor:pointer; font-size:11px; padding:4px 8px; border-radius:4px; font-weight:600;" title="Elimina Definitivamente">ELIMINA</button>
-                        </div>
-                    `;
+                    buttons = `<div style="position:absolute; top:20px; right:20px; z-index:20;"><button onclick="event.stopPropagation(); deleteAlloc('${alloc.id}')" style="background:rgba(239,68,68,0.2); border:1px solid rgba(239,68,68,0.4); color:#ffaaaa; padding:4px 8px; border-radius:4px;">ELIMINA</button></div>`;
                 } else {
-                    // DASHBOARD VIEW
-                    buttons = `
-                        <div style="position:absolute; top:20px; right:20px; display:flex; gap:8px; z-index: 20;">
-                            <button onclick="event.stopPropagation(); openEditAlloc('${alloc.id}')" class="btn btn-secondary" style="height:32px; padding:0 12px; font-size:12px; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px);">✏️ Modifica</button>
-                            ${isPast ? 
-                                `<button onclick="event.stopPropagation(); archiveAlloc('${alloc.id}')" style="background:rgba(245,158,11,0.2); border:1px solid rgba(245,158,11,0.4); color:#fbbf24; cursor:pointer; font-size:11px; padding:4px 8px; border-radius:4px; font-weight:600;" title="Sposta in Archivio">ARCHIVIA</button>` : 
-                                `<button onclick="event.stopPropagation(); deleteAlloc('${alloc.id}')" class="btn btn-danger" style="height:32px; padding:0 12px; font-size:12px;">🗑 Elimina</button>`
-                            }
-                        </div>
-                    `;
+                    buttons = `<div style="position:absolute; top:20px; right:20px; display:flex; gap:8px; z-index:20;">
+                        <button onclick="event.stopPropagation(); openEditAlloc('${alloc.id}')" class="btn btn-secondary" style="height:32px; font-size:12px; padding:0 12px;">✏️</button>
+                        ${isPast ? `<button onclick="event.stopPropagation(); archiveAlloc('${alloc.id}')" style="background:rgba(245,158,11,0.2); color:#fbbf24; padding:4px 8px; border-radius:4px;">ARCHIVIA</button>` : `<button onclick="event.stopPropagation(); deleteAlloc('${alloc.id}')" class="btn btn-danger" style="height:32px; font-size:12px; padding:0 12px;">🗑</button>`}
+                    </div>`;
                 }
             }
 
             const freeSlots = alloc.slots.filter(s => !s.booked).length;
-            const totalSlots = alloc.slots.length;
-            const percent = Math.round(((totalSlots - freeSlots) / totalSlots) * 100);
+            const percent = Math.round(((alloc.slots.length - freeSlots) / alloc.slots.length) * 100);
 
-            card.innerHTML = `
-                ${buttons}
-                <div style="font-size:10px; text-transform:uppercase; color:var(--text-secondary); font-weight:800; letter-spacing:1px; margin-bottom:8px; opacity:0.8;">${teamData.label}</div>
+            card.innerHTML = `${buttons}
+                <div style="font-size:10px; text-transform:uppercase; color:var(--text-secondary); font-weight:800; letter-spacing:1px; margin-bottom:8px;">${teamData.label}</div>
                 <h3 style="color:white;">${dateStr}</h3>
                 <div style="display:flex; align-items:center; gap:12px; margin-top:32px;">
-                    <div style="flex:1; height:6px; background:#222; border-radius:3px; overflow:hidden;">
-                        <div style="height:100%; width:${percent}%; background:${teamData.color}; box-shadow:0 0 10px ${teamData.color};"></div>
-                    </div>
+                    <div style="flex:1; height:6px; background:#222; border-radius:3px; overflow:hidden;"><div style="height:100%; width:${percent}%; background:${teamData.color}; box-shadow:0 0 10px ${teamData.color};"></div></div>
                     <div style="font-size:12px; color:#999; font-weight:600;">${freeSlots} liberi</div>
-                </div>
-            `;
+                </div>`;
             container.appendChild(card);
         }
 
-        window.openEditAlloc = (id) => {
-            window.TEMP.editTargetId = id;
-            const alloc = window.DB.allocations.find(a => a.id === id);
-            if (!alloc) return;
-
-            document.getElementById('edit-alloc-date').value = alloc.date;
-            
-            const teamSelect = document.getElementById('edit-alloc-team');
-            teamSelect.innerHTML = '';
-            const teamsList = window.SETTINGS.teams || [];
-            
-            if(teamsList.length === 0) {
-               const opt = document.createElement('option');
-               opt.innerText = "Nessuna redazione";
-               teamSelect.appendChild(opt);
-            } else {
-               teamsList.forEach(t => {
-                   const opt = document.createElement('option');
-                   opt.value = t.trim().toLowerCase().replace(/\s+/g, '');
-                   opt.innerText = t;
-                   teamSelect.appendChild(opt);
-               });
-            }
-            
-            teamSelect.value = alloc.team;
-            document.getElementById('edit-alloc-modal').style.display = 'flex';
-        };
-
-        window.saveEditAlloc = async () => {
-            const id = window.TEMP.editTargetId;
-            const newDate = document.getElementById('edit-alloc-date').value;
-            const newTeam = document.getElementById('edit-alloc-team').value;
-
-            if(!newDate || !newTeam) return alert("Compila tutti i campi.");
-
-            try {
-                await updateDoc(doc(window.getCollectionRef(), id), {
-                    date: newDate,
-                    team: newTeam
-                });
-                document.getElementById('edit-alloc-modal').style.display = 'none';
-            } catch(e) {
-                alert("Errore modifica: " + e.message);
-            }
-        };
-
+        // Details View
         window.openDetails = (allocId) => {
             window.TEMP.allocId = allocId;
             const alloc = window.DB.allocations.find(a => a.id === allocId);
             if(alloc) {
                 switchView('slots-view');
                 const d = new Date(alloc.date);
-                const month = d.toLocaleString('it-IT', { month: 'long' });
-                const capMonth = month.charAt(0).toUpperCase() + month.slice(1);
-                document.getElementById('slot-date-title').innerText = `${d.getDate()} ${capMonth} ${d.getFullYear()}`;
+                document.getElementById('slot-date-title').innerText = d.toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
                 document.getElementById('slot-team-subtitle').innerText = window.USERS[alloc.team]?.label || alloc.team;
                 
-                // --- NUOVA LOGICA BOTTONI HEADER ---
                 const actionsDiv = document.getElementById('slot-admin-actions');
                 if (window.SESSION.role === 'ADMIN') {
                     actionsDiv.style.display = 'flex';
-                    const todayStr = getLocalDateString(0);
-                    const isPast = alloc.date < todayStr;
-                    
-                    let html = '';
-                    // Tasto Modifica sempre presente
-                    html += `<button class="btn btn-secondary" style="height:32px; font-size:12px; padding:0 12px;" onclick="openEditAlloc('${alloc.id}')">✏️ Modifica</button>`;
-                    
-                    // Tasto Elimina o Archivia
-                    if (isPast) {
-                         html += `<button class="btn btn-secondary" style="height:32px; font-size:12px; padding:0 12px; color:#fbbf24; border-color:rgba(245,158,11,0.4);" onclick="archiveAlloc('${alloc.id}'); goToDashboard();">📦 Archivia</button>`;
-                    } else {
-                         html += `<button class="btn btn-danger" style="height:32px; font-size:12px; padding:0 12px;" onclick="deleteAlloc('${alloc.id}'); goToDashboard();">🗑 Elimina</button>`;
-                    }
-                    actionsDiv.innerHTML = html;
-                } else {
-                    actionsDiv.style.display = 'none';
-                }
-                
+                    actionsDiv.innerHTML = `<button class="btn btn-secondary" style="height:32px; font-size:12px;" onclick="openEditAlloc('${alloc.id}')">✏️ Modifica</button>`;
+                } else actionsDiv.style.display = 'none';
                 renderSlots(alloc);
             }
         };
 
         function renderSlots(alloc) {
-            const list = document.getElementById('slots-container');
-            list.innerHTML = '';
+            const list = document.getElementById('slots-container'); list.innerHTML = '';
             const teamData = window.USERS[alloc.team] || { color: '#3b82f6' };
             alloc.slots.forEach(slot => {
                 const row = document.createElement('div');
                 row.className = `slot-item ${slot.booked ? 'slot-booked' : 'slot-free'}`;
                 if (slot.booked) {
-                    row.innerHTML = `
-                        <div style="display:flex; align-items:center;">
+                    row.innerHTML = `<div style="display:flex; align-items:center;">
                             <div class="slot-time">${slot.time}</div>
                             <div style="margin-left:24px;">
                                 <div style="font-weight:700; color:white; font-size:16px;">${slot.info.guest}</div>
                                 <div style="font-size:13px; color:var(--text-secondary); margin-top:4px;">${slot.info.company || ''}</div>
                                 <div style="font-size:11px; margin-top:8px; display:flex; align-items:center; gap:8px;">
-                                    <span style="display:inline-block; width:8px; height:8px; background:${teamData.color}; border-radius:50%; box-shadow:0 0 5px ${teamData.color};"></span>
+                                    <span style="display:inline-block; width:8px; height:8px; background:${teamData.color}; border-radius:50%;"></span>
                                     <span style="color:#888;">${slot.info.jour}</span>
                                 </div>
                             </div>
                         </div>
-                        <button class="btn btn-secondary" style="height:36px; font-size:11px; padding:0 16px;" onclick="editBooking('${slot.time}')">Modifica</button>
-                    `;
+                        <button class="btn btn-secondary" style="height:36px; font-size:11px;" onclick="editBooking('${slot.time}')">Modifica</button>`;
                 } else {
-                    row.innerHTML = `
-                        <div style="display:flex; align-items:center;">
-                            <div class="slot-time">${slot.time}</div>
-                            <div style="margin-left:24px; color:#555; font-size:13px; font-weight:500;">Disponibile</div>
-                        </div>
-                        <button class="btn btn-primary" style="height:36px; font-size:11px; padding:0 16px;" onclick="openModal('${slot.time}')">Prenota</button>
-                    `;
+                    row.innerHTML = `<div style="display:flex; align-items:center;"><div class="slot-time">${slot.time}</div><div style="margin-left:24px; color:#555; font-size:13px;">Disponibile</div></div>
+                        <button class="btn btn-primary" style="height:36px; font-size:11px;" onclick="openModal('${slot.time}')">Prenota</button>`;
                 }
                 list.appendChild(row);
             });
         }
 
+        // Production Notes (Regia)
         window.openProductionNotes = () => { switchView('production-notes-view'); renderProductionNotes(); };
-
         function renderProductionNotes() {
-            const container = document.getElementById('notes-list');
-            container.innerHTML = '';
+            const container = document.getElementById('notes-list'); container.innerHTML = '';
             const todayStr = getLocalDateString(0); 
             const todayAllocations = window.DB.allocations.filter(a => a.date === todayStr);
             let allSlots = [];
-
             todayAllocations.forEach(alloc => {
                 alloc.slots.forEach(slot => {
                     if (slot.booked && (!slot.info.status || slot.info.status === 'scheduled')) {
@@ -1032,18 +652,19 @@
                     }
                 });
             });
-
             allSlots.sort((a, b) => a.time.localeCompare(b.time));
 
-            if (allSlots.length === 0) {
-                container.innerHTML = '<div style="text-align:center; padding:80px; color:#555;">Nessuna registrazione in programma oggi.</div>';
-                return;
-            }
+            if (allSlots.length === 0) { container.innerHTML = '<div style="text-align:center; padding:80px; color:#555;">Nessuna registrazione in programma oggi.</div>'; return; }
 
             allSlots.forEach(item => {
                 const cleanName = (item.info.guest || '').toLowerCase().replace(/[^a-z0-9]/g, '');
                 const cleanComp = (item.info.company || '').toLowerCase().replace(/[^a-z0-9]/g, '');
                 const filename = `${cleanName}_${cleanComp}`;
+                
+                // Get Associated Team for Format
+                const formatName = item.info.format || '';
+                const mappedTeamId = (window.SETTINGS.formatMappings && window.SETTINGS.formatMappings[formatName]) ? window.SETTINGS.formatMappings[formatName] : item.team;
+                const mappedTeamData = window.USERS[mappedTeamId] || { label: mappedTeamId, color: '#666' };
 
                 const div = document.createElement('div');
                 div.className = 'note-item';
@@ -1051,20 +672,21 @@
                     <div style="font-weight:700; font-family:'JetBrains Mono'; color:white; font-size:15px;">${item.time}</div>
                     <div>
                         <div style="font-weight:700; color:white; display:flex; align-items:center; gap:10px; font-size:15px;">
-                            ${item.info.guest} 
-                            <button onclick="openProdNoteModal('${item.allocId}', '${item.time}')" style="background:transparent; border:1px solid var(--border-glass); color:var(--text-secondary); border-radius:4px; padding:4px 8px; font-size:10px; cursor:pointer; font-weight:700;">+ NOTE</button>
+                            ${item.info.guest} <button onclick="openProdNoteModal('${item.allocId}', '${item.time}')" style="background:transparent; border:1px solid var(--border-glass); color:var(--text-secondary); border-radius:4px; padding:2px 6px; font-size:10px; cursor:pointer;">NOTE</button>
                         </div>
                         <div style="font-size:13px; color:var(--text-secondary); margin-top:4px;">${item.info.company || ''}</div>
-                        ${item.info.productionNotes ? `<div style="font-size:12px; color:var(--success); margin-top:8px; background:rgba(16,185,129,0.1); padding:8px 12px; border-radius:6px; line-height:1.4; border-left:2px solid var(--success);">“${item.info.productionNotes}”</div>` : ''}
+                        ${item.info.productionNotes ? `<div style="font-size:12px; color:var(--success); margin-top:8px; border-left:2px solid var(--success); padding-left:8px;">${item.info.productionNotes}</div>` : ''}
                     </div>
-                    <div style="font-size:13px; font-weight:500;">${item.info.format || '-'}</div>
-                    <div style="font-size:13px; font-weight:500;">${item.info.jour || '-'}</div>
-                    <div style="font-size:11px; text-transform:uppercase; text-align:center; font-weight:700; letter-spacing:0.5px; background:#111; padding:4px; border-radius:4px; border:1px solid #333;">${item.info.type}</div>
+                    <div>
+                        <div style="font-size:13px; font-weight:500; color:white;">${item.info.format || '-'}</div>
+                        <div style="font-size:11px; font-weight:700; color:${mappedTeamData.color}; margin-top:2px;">${mappedTeamData.label.toUpperCase()}</div>
+                    </div>
+                    <div style="font-size:13px;">${item.info.jour || '-'}</div>
+                    <div style="font-size:11px; text-transform:uppercase; text-align:center; background:#111; padding:4px; border-radius:4px;">${item.info.type}</div>
                     <div style="text-align:right; display:flex; gap:8px; justify-content:flex-end;">
-                        <button class="btn btn-secondary" style="height:32px; padding:0 12px; font-size:11px;" onclick="copyToClipboard('${filename}')" title="Copia Nome File">FILE</button>
+                        <button class="btn btn-secondary" style="height:32px; padding:0 12px; font-size:11px;" onclick="copyToClipboard('${filename}')">FILE</button>
                         <button class="btn btn-danger" style="height:32px; padding:0 12px; font-size:11px;" onclick="sendToEditing('${item.allocId}', '${item.time}', this)">STOP &rarr; EDIT</button>
-                    </div>
-                `;
+                    </div>`;
                 container.appendChild(div);
             });
         }
@@ -1076,69 +698,51 @@
             document.getElementById('prod-note-text').value = slot.info.productionNotes || '';
             document.getElementById('prod-note-modal').style.display = 'flex';
         };
-
         window.saveProdNote = async () => {
             const { allocId, time } = window.TEMP.noteTarget;
             const note = document.getElementById('prod-note-text').value;
             const alloc = window.DB.allocations.find(a => a.id === allocId);
             const newSlots = [...alloc.slots];
             const idx = newSlots.findIndex(s => s.time === time);
-            
             newSlots[idx].info.productionNotes = note;
             await updateDoc(doc(window.getCollectionRef(), allocId), { slots: newSlots });
             document.getElementById('prod-note-modal').style.display = 'none';
         };
-
         window.sendToEditing = async (allocId, time, btn) => {
-            if(!confirm("Confermi chiusura registrazione? Sposta in montaggio.")) return;
+            if(!confirm("Confermi chiusura registrazione?")) return;
             btn.style.opacity = '0.5';
-            setTimeout(async () => {
-                const alloc = window.DB.allocations.find(a => a.id === allocId);
-                const newSlots = [...alloc.slots];
-                const idx = newSlots.findIndex(s => s.time === time);
-                newSlots[idx].info.status = 'editing_queue'; 
-                newSlots[idx].info.movedToEditingAt = new Date().toISOString();
-                await updateDoc(doc(window.getCollectionRef(), allocId), { slots: newSlots });
-            }, 500);
+            const alloc = window.DB.allocations.find(a => a.id === allocId);
+            const newSlots = [...alloc.slots];
+            const idx = newSlots.findIndex(s => s.time === time);
+            newSlots[idx].info.status = 'editing_queue'; 
+            newSlots[idx].info.movedToEditingAt = new Date().toISOString();
+            await updateDoc(doc(window.getCollectionRef(), allocId), { slots: newSlots });
         };
 
+        // Editing Queue (NEW VISUALS)
         window.openEditingQueue = () => { switchView('editing-queue-view'); renderEditingQueue(); };
-
         function renderEditingQueue() {
-            const container = document.getElementById('editing-list');
-            container.innerHTML = '';
+            const container = document.getElementById('editing-list'); container.innerHTML = '';
             let allItems = [];
-            
             const today = getLocalDateString(0);
 
             window.DB.allocations.forEach(alloc => {
-                // Skip if current session user shouldn't see this team (unless admin)
                 if (window.SESSION.role !== 'ADMIN' && alloc.team !== window.SESSION.user && alloc.id !== 'manual_jobs') return;
-                
                 const isManual = alloc.id === 'manual_jobs';
                 const isPast = alloc.date < today;
 
                 alloc.slots.forEach(slot => {
-                    // Logic 1: Explicitly in queue (any date)
                     if (slot.booked && ['editing_queue', 'waiting', 'ready'].includes(slot.info.status)) {
-                        // FIX: Detect manual/extra job
                         const isManualDate = alloc.date === '9999-99-99' || isManual;
-                        allItems.push({ ...slot, allocId: alloc.id, date: isManualDate ? 'LAVORO EXTRA' : alloc.date });
-                    }
-                    // Logic 2: Past Unprocessed (Auto-Recover)
-                    else if (!isManual && isPast && slot.booked && (!slot.info.status || slot.info.status === 'scheduled')) {
-                        allItems.push({ ...slot, allocId: alloc.id, date: alloc.date, isRecover: true });
-                    }
-                    // Logic 3: Manual Jobs that are just created
-                    else if (isManual && slot.booked) {
-                         if(!['editing_queue', 'waiting', 'ready', 'archived_editing'].includes(slot.info.status)) {
-                             allItems.push({ ...slot, allocId: alloc.id, date: 'LAVORO EXTRA' });
-                         }
+                        allItems.push({ ...slot, allocId: alloc.id, date: isManualDate ? null : alloc.date, team: alloc.team });
+                    } else if (!isManual && isPast && slot.booked && (!slot.info.status || slot.info.status === 'scheduled')) {
+                        allItems.push({ ...slot, allocId: alloc.id, date: alloc.date, isRecover: true, team: alloc.team });
+                    } else if (isManual && slot.booked && !['archived_editing'].includes(slot.info.status)) {
+                        allItems.push({ ...slot, allocId: alloc.id, date: null, team: 'manual' });
                     }
                 });
             });
 
-            // Sort: Priority to Active Queue, then Recovered
             allItems.sort((a, b) => {
                 const dateA = a.info.movedToEditingAt || a.info.updatedAt || '0';
                 const dateB = b.info.movedToEditingAt || b.info.updatedAt || '0';
@@ -1148,72 +752,70 @@
             if (allItems.length === 0) { container.innerHTML = '<div style="text-align:center; opacity:0.5; padding:80px; font-size:14px; color:#555;">Nessun lavoro in coda.</div>'; return; }
             
             allItems.forEach(item => {
-                let st = { label: 'DA MONTARE', class: 'status-queue' };
-                if(item.isRecover) st = { label: 'NON PROCESSATO', class: 'status-unprocessed' };
-                else if(item.info.status === 'waiting') st = { label: 'IN ATTESA', class: 'status-waiting' };
-                else if(item.info.status === 'ready') st = { label: 'PRONTO', class: 'status-ready' };
+                let st = { label: 'In Lavorazione', glow: 'status-glow-queue', text: 'IN CODA' };
+                if(item.isRecover) st = { label: 'Non Processato', glow: 'status-glow-queue', text: 'DA RECUPERARE' };
+                else if(item.info.status === 'waiting') st = { label: 'In Attesa', glow: 'status-glow-waiting', text: 'IN ATTESA' };
+                else if(item.info.status === 'ready') st = { label: 'Pronto', glow: 'status-glow-ready', text: 'PRONTO' };
                 
-                const strName = `${item.info.guest} - ${item.info.company || ''}`;
-                const strLower = `${item.info.guest}\n${item.info.job || ''}`;
-                const safeStrName = strName.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-                const safeStrLower = strLower.replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, "\\n");
+                // Manual Jobs
+                if(item.allocId === 'manual_jobs') st.glow = 'status-glow-manual';
 
-                // Check if time is a manual ID (starts with M-)
-                const isManualTime = item.time.toString().startsWith('M-');
+                const guestName = item.info.guest || 'Sconosciuto';
+                const companyName = item.info.company ? ` - ${item.info.company}` : '';
+                const formatName = item.info.format || 'Format N/D';
+                const dateFriendly = item.date ? formatDateFriendly(item.date) : 'Lavoro Extra';
+                
+                // --- Strings for Copying ---
+                const strNameCompany = `${item.info.guest}${item.info.company ? ' - ' + item.info.company : ''}`;
+                const strJob = item.info.job || '';
+                const safeStrName = strNameCompany.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                const safeStrJob = strJob.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+
+                // Redazione Lookup Logic
+                const mappedTeamId = (window.SETTINGS.formatMappings && window.SETTINGS.formatMappings[formatName]) ? window.SETTINGS.formatMappings[formatName] : item.team;
+                const mappedTeamData = window.USERS[mappedTeamId] || { label: 'Redazione', color: '#666' };
 
                 const div = document.createElement('div');
-                div.className = 'edit-item';
-                
-                // --- MODIFICA STILE LAVORO EXTRA ---
-                if(item.allocId === 'manual_jobs') {
-                    div.style.borderLeft = "4px solid var(--purple)";
-                    div.style.paddingLeft = "32px"; // Spaziatura extra
-                }
-
+                div.className = `edit-item-new ${st.glow}`;
                 div.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:start;">
                         <div>
-                            <div style="font-weight:800; font-size:16px; color:white; margin-bottom:4px;">
-                                ${item.date} 
-                                ${!isManualTime ? `<span style="color:#444; margin:0 10px;">/</span> <span style="font-family:'JetBrains Mono'; color:var(--primary);">${item.time}</span>` : ''}
+                            <div class="job-title">${guestName}${companyName} <span class="job-date">${dateFriendly}</span></div>
+                            <div class="job-meta">
+                                <span>${formatName}</span>
+                                <span class="redazione-tag" style="color:${mappedTeamData.color}; border-color:${mappedTeamData.color};">${mappedTeamData.label}</span>
                             </div>
-                            <div style="font-size:12px; color:var(--text-secondary);">Format: ${item.info.format || 'N/D'}</div>
+                            <div class="neon-status-text" style="background:${st.glow.includes('ready')?'rgba(16,185,129,0.2)':(st.glow.includes('waiting')?'rgba(245,158,11,0.2)':'rgba(239,68,68,0.2)')}; color:${st.glow.includes('ready')?'#34d399':(st.glow.includes('waiting')?'#fbbf24':'#f87171')}; box-shadow:0 0 10px ${st.glow.includes('ready')?'rgba(16,185,129,0.2)':(st.glow.includes('waiting')?'rgba(245,158,11,0.2)':'rgba(239,68,68,0.2)')};">${st.text}</div>
                         </div>
-                        <div class="status-badge ${st.class}">${st.label}</div>
+                        <div style="display:flex; gap:10px;">
+                            ${item.info.productionNotes ? `<div style="max-width:200px; font-size:12px; color:#aaa; font-style:italic; text-align:right;">"${item.info.productionNotes}"</div>` : ''}
+                        </div>
                     </div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px;">
-                        <div class="copy-box" onclick="copyToClipboard('${safeStrName}')" title="Clicca per copiare">${strName}</div>
-                        <div class="copy-box" onclick="copyToClipboard('${safeStrLower}')" title="Clicca per copiare">${strLower.replace(/\n/g, '<br>')}</div>
-                    </div>
-                    ${item.info.productionNotes ? `<div style="background:rgba(255,255,255,0.03); padding:16px; border-radius:8px; font-size:13px; color:#ccc; border:1px dashed #444; line-height:1.5;"><strong>Note Regia:</strong> ${item.info.productionNotes}</div>` : ''}
+                    
                     ${window.SESSION.role === 'ADMIN' ? `
-                        <div style="margin-top:24px; display:flex; gap:10px; justify-content:flex-end; border-top:1px solid #222; padding-top:20px;">
-                            ${item.isRecover ? 
-                                `<button class="btn btn-secondary" style="height:32px; font-size:11px; color:#ccc;" onclick="updateStatus('${item.allocId}', '${item.time}', 'archived_editing')">Archivia</button>
-                                 <button class="btn btn-danger" style="height:32px; font-size:11px;" onclick="updateStatus('${item.allocId}', '${item.time}', 'editing_queue')">Porta in Coda</button>` 
-                                : 
-                                `<button class="btn btn-danger" style="height:32px; font-size:11px;" onclick="updateStatus('${item.allocId}', '${item.time}', 'editing_queue')">Reset</button>
-                                 <button class="btn btn-secondary" style="height:32px; font-size:11px; color:#fbbf24; border-color:rgba(245,158,11,0.3);" onclick="updateStatus('${item.allocId}', '${item.time}', 'waiting')">Attesa</button>
-                                 <button class="btn btn-success" style="height:32px; font-size:11px;" onclick="updateStatus('${item.allocId}', '${item.time}', 'ready')">Pronto</button>
-                                 <button class="btn btn-secondary" style="height:32px; font-size:11px; margin-left:12px;" onclick="updateStatus('${item.allocId}', '${item.time}', 'archived_editing')">Archivia</button>`
-                            }
+                    <div style="margin-top:16px; border-top:1px solid rgba(255,255,255,0.1); padding-top:12px;">
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:16px;">
+                            <div class="copy-box" onclick="copyToClipboard('${safeStrName}')" title="Copia: ${safeStrName}">📋 ${strNameCompany}</div>
+                            <div class="copy-box" onclick="copyToClipboard('${safeStrJob}')" title="Copia: ${safeStrJob}">📋 ${strJob || 'Nessun Job Title'}</div>
                         </div>
-                    ` : ''}
+                        <div style="display:flex; justify-content:flex-end; gap:8px;">
+                            <button class="btn btn-danger" style="height:28px; font-size:10px;" onclick="updateStatus('${item.allocId}', '${item.time}', 'editing_queue')">Coda</button>
+                            <button class="btn btn-secondary" style="height:28px; font-size:10px; color:#fbbf24; border-color:rgba(245,158,11,0.3);" onclick="updateStatus('${item.allocId}', '${item.time}', 'waiting')">Attesa</button>
+                            <button class="btn btn-success" style="height:28px; font-size:10px;" onclick="updateStatus('${item.allocId}', '${item.time}', 'ready')">Pronto</button>
+                            <button class="btn btn-secondary" style="height:28px; font-size:10px;" onclick="updateStatus('${item.allocId}', '${item.time}', 'archived_editing')">Archivia</button>
+                        </div>
+                    </div>` : ''}
                 `;
                 container.appendChild(div);
             });
         }
 
         window.openManualJobModal = () => {
-            document.getElementById('m-name').value = '';
-            document.getElementById('m-company').value = '';
-            document.getElementById('m-job').value = ''; 
-            document.getElementById('m-note').value = '';
+            ['m-name','m-company','m-job','m-note'].forEach(id => document.getElementById(id).value = '');
             populateSelect('m-format', window.SETTINGS.formats, '');
             populateSelect('m-jour', window.SETTINGS.journalists, '');
             document.getElementById('manual-job-modal').style.display = 'flex';
         };
-
         window.saveManualJob = async () => {
             const info = {
                 guest: document.getElementById('m-name').value,
@@ -1221,413 +823,219 @@
                 job: document.getElementById('m-job').value, 
                 format: document.getElementById('m-format').value,
                 jour: document.getElementById('m-jour').value,
-                sales: '',
-                type: 'Manuale',
-                note: '',
-                status: 'editing_queue',
+                sales: '', type: 'Manuale', note: '', status: 'editing_queue',
                 productionNotes: document.getElementById('m-note').value,
-                updatedAt: new Date().toISOString(),
-                movedToEditingAt: new Date().toISOString()
+                updatedAt: new Date().toISOString(), movedToEditingAt: new Date().toISOString()
             };
-
             if(!info.guest) return alert("Inserisci almeno il nome/titolo.");
-
-            // Create or Update 'manual_jobs' doc
             const docRef = doc(window.getCollectionRef(), 'manual_jobs');
-            let docSnap;
-            try { docSnap = await getDoc(docRef); } catch(e) { /* ignore */ }
-
-            let slots = [];
-            if(docSnap && docSnap.exists()) {
-                slots = docSnap.data().slots || [];
-            }
-
-            // Create a unique time ID based on timestamp
-            const uniqueId = "M-" + Date.now();
-            slots.push({
-                time: uniqueId,
-                booked: true,
-                info: info
-            });
-
+            let docSnap, slots = [];
+            try { docSnap = await getDoc(docRef); } catch(e) {}
+            if(docSnap && docSnap.exists()) slots = docSnap.data().slots || [];
+            slots.push({ time: "M-" + Date.now(), booked: true, info: info });
             await setDoc(docRef, { id: 'manual_jobs', team: 'MANUAL', date: '9999-99-99', slots }, { merge: true });
             document.getElementById('manual-job-modal').style.display = 'none';
-            // Force refresh if needed, but listener handles it
         };
 
         window.openEditingArchive = () => { switchView('editing-archive-view'); renderEditingArchive(); };
-
         function renderEditingArchive() {
-            const container = document.getElementById('editing-archive-list');
-            container.innerHTML = '';
+            const container = document.getElementById('editing-archive-list'); container.innerHTML = '';
             let allItems = [];
             window.DB.allocations.forEach(alloc => {
                 if (window.SESSION.role !== 'ADMIN' && alloc.team !== window.SESSION.user && alloc.id !== 'manual_jobs') return;
                 alloc.slots.forEach(slot => {
                     if (slot.booked && slot.info.status === 'archived_editing') {
-                        // FIX: Detect manual/extra job
                         const isManualDate = alloc.date === '9999-99-99' || alloc.id === 'manual_jobs';
-                        allItems.push({ ...slot, allocId: alloc.id, date: isManualDate ? 'LAVORO EXTRA' : alloc.date });
+                        allItems.push({ ...slot, allocId: alloc.id, date: isManualDate ? null : alloc.date });
                     }
                 });
             });
             allItems.sort((a, b) => new Date(b.info.updatedAt || 0) - new Date(a.info.updatedAt || 0));
-
             if (allItems.length === 0) { container.innerHTML = '<div style="text-align:center; opacity:0.5; padding:60px;">Archivio vuoto.</div>'; return; }
-
             allItems.forEach(item => {
-                const strName = `${item.info.guest} - ${item.info.company || ''}`;
+                const dateDisplay = item.date ? formatDateFriendly(item.date) : 'Extra';
                 const div = document.createElement('div');
-                div.className = 'edit-item';
-                div.style.opacity = "0.6"; 
-                
-                // Check manual time
-                const isManualTime = item.time.toString().startsWith('M-');
-
-                // --- MODIFICA STILE LAVORO EXTRA (ARCHIVIO) ---
-                if(item.allocId === 'manual_jobs') {
-                    div.style.borderLeft = "4px solid var(--purple)";
-                    div.style.paddingLeft = "32px"; 
-                }
-
+                div.className = 'edit-item-new';
+                div.style.opacity = '0.5';
                 div.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; justify-content:space-between;">
                         <div>
-                            <div style="font-weight:700; font-size:15px; color:white;">
-                                ${item.date} 
-                                ${!isManualTime ? `| ${item.time}` : ''}
-                            </div>
-                            <div style="font-size:13px; margin-top:4px; color:#888;">${strName}</div>
+                            <div style="font-weight:700; color:white;">${item.info.guest} <span style="font-weight:400; color:#888;">${dateDisplay}</span></div>
+                            <div style="font-size:12px; color:#666;">${item.info.format}</div>
                         </div>
-                        <div class="badge" style="background:#222; color:#777; border:1px solid #333;">ARCHIVIATO</div>
+                        <div class="badge" style="background:#222; color:#777;">ARCHIVIATO</div>
                     </div>
-                    ${window.SESSION.role === 'ADMIN' ? `
-                        <div style="margin-top:20px; text-align:right;">
-                            <button class="btn btn-secondary" style="height:32px; font-size:11px;" onclick="updateStatus('${item.allocId}', '${item.time}', 'ready')">Ripristina</button>
-                            <button class="btn btn-danger" style="height:32px; font-size:11px; margin-left:8px;" onclick="deleteArchivedEditing('${item.allocId}', '${item.time}')">Elimina</button>
-                        </div>
-                    ` : ''}
-                `;
+                    ${window.SESSION.role === 'ADMIN' ? `<div style="margin-top:10px; text-align:right;">
+                        <button class="btn btn-secondary" style="height:24px; font-size:10px;" onclick="updateStatus('${item.allocId}', '${item.time}', 'ready')">Ripristina</button>
+                        <button class="btn btn-danger" style="height:24px; font-size:10px; margin-left:8px;" onclick="deleteArchivedEditing('${item.allocId}', '${item.time}')">Elimina</button>
+                    </div>` : ''}`;
                 container.appendChild(div);
             });
         }
-
+        window.deleteArchivedEditing = async (allocId, time) => {
+            if(!confirm("Eliminazione definitiva dall'archivio. Procedere?")) return;
+            const alloc = window.DB.allocations.find(a => a.id === allocId);
+            let newSlots = [...alloc.slots];
+            
+            // If it's a manual job, remove the slot completely
+            if(allocId === 'manual_jobs') {
+                newSlots = newSlots.filter(s => s.time !== time);
+            } else {
+                // If it's a calendar slot, reset to empty
+                const idx = newSlots.findIndex(s => s.time === time);
+                if (idx !== -1) {
+                    newSlots[idx] = { time: time, booked: false, info: {} };
+                }
+            }
+            await updateDoc(doc(window.getCollectionRef(), allocId), { slots: newSlots });
+        };
         window.updateStatus = async (allocId, time, newStatus) => {
             const alloc = window.DB.allocations.find(a => a.id === allocId);
             const newSlots = [...alloc.slots];
             const idx = newSlots.findIndex(s => s.time === time);
             newSlots[idx].info.status = newStatus;
             newSlots[idx].info.updatedAt = new Date().toISOString(); 
-            // If recovering, set moved timestamp
             if(newStatus === 'editing_queue') newSlots[idx].info.movedToEditingAt = new Date().toISOString();
-            
             await updateDoc(doc(window.getCollectionRef(), allocId), { slots: newSlots });
         };
 
-        window.deleteArchivedEditing = async (allocId, time) => {
-            if(!confirm("Eliminazione irreversibile. Procedere?")) return;
-            const alloc = window.DB.allocations.find(a => a.id === allocId);
-            let newSlots = [...alloc.slots];
-            
-            if(allocId === 'manual_jobs') {
-                // For manual jobs, we remove the slot entirely
-                newSlots = newSlots.filter(s => s.time !== time);
-            } else {
-                // For calendar slots, we reset them to free
-                const idx = newSlots.findIndex(s => s.time === time);
-                newSlots[idx] = { time: time, booked: false, info: {} };
-            }
-            await updateDoc(doc(window.getCollectionRef(), allocId), { slots: newSlots });
-        };
-
-        window.createAllocation = async () => {
-            const date = document.getElementById('new-date').value;
-            const team = document.getElementById('new-team').value;
-            const start = document.getElementById('start-time').value;
-            const end = document.getElementById('end-time').value;
-            if(!date || !start || !end) return alert("Compilare tutti i campi.");
-            let slots = [];
-            let [h, m] = start.split(':').map(Number);
-            let [eh, em] = end.split(':').map(Number);
-            let cur = h * 60 + m;
-            let endM = eh * 60 + em;
-            while(cur < endM) {
-                let hh = Math.floor(cur / 60).toString().padStart(2,'0');
-                let mm = (cur % 60).toString().padStart(2,'0');
-                slots.push({ time: `${hh}:${mm}`, booked: false, info: {} });
-                cur += 30;
-            }
-            await addDoc(window.getCollectionRef(), { date, team, slots, createdAt: new Date().toISOString() });
-        };
-
-        window.archiveAlloc = async (id) => {
-            if(!confirm("Vuoi archiviare questa data? Scomparirà dalla Dashboard.")) return;
-            await updateDoc(doc(window.getCollectionRef(), id), { archived: true });
-        };
-
-        window.deleteAlloc = async (id) => { if(confirm("Eliminare l'intera giornata definitivamente?")) await deleteDoc(doc(window.getCollectionRef(), id)); };
-
-        window.openModal = (time) => {
-            window.TEMP.slotTime = time;
-            document.getElementById('booking-modal').style.display = 'flex';
-            document.getElementById('modal-time').innerText = time;
-            document.getElementById('modal-title-action').innerText = "Prenota";
-            document.getElementById('btn-delete').style.display = 'none';
-            ['b-name','b-company','b-job','b-note'].forEach(id => document.getElementById(id).value = '');
-            populateSelect('b-format', window.SETTINGS.formats, '');
-            populateSelect('b-jour', window.SETTINGS.journalists, '');
-            populateSelect('b-sales', window.SETTINGS.sales, '');
-            document.getElementById('b-type').value = 'Presenza';
-        };
-
-        window.editBooking = (time) => {
-            window.TEMP.slotTime = time;
-            const alloc = window.DB.allocations.find(a => a.id === window.TEMP.allocId);
-            const slot = alloc.slots.find(s => s.time === time);
-            document.getElementById('booking-modal').style.display = 'flex';
-            document.getElementById('modal-time').innerText = time;
-            document.getElementById('modal-title-action').innerText = "Modifica";
-            document.getElementById('btn-delete').style.display = 'inline-flex';
-            const i = slot.info;
-            document.getElementById('b-name').value = i.guest || '';
-            document.getElementById('b-company').value = i.company || '';
-            document.getElementById('b-job').value = i.job || '';
-            document.getElementById('b-type').value = i.type || 'Presenza';
-            document.getElementById('b-note').value = i.note || '';
-            populateSelect('b-format', window.SETTINGS.formats, i.format);
-            populateSelect('b-jour', window.SETTINGS.journalists, i.jour);
-            populateSelect('b-sales', window.SETTINGS.sales, i.sales);
-        };
-
-        window.closeModal = () => document.getElementById('booking-modal').style.display = 'none';
-
-        window.saveBooking = async () => {
-            const alloc = window.DB.allocations.find(a => a.id === window.TEMP.allocId);
-            const newSlots = [...alloc.slots];
-            const idx = newSlots.findIndex(s => s.time === window.TEMP.slotTime);
-            const info = {
-                guest: document.getElementById('b-name').value,
-                company: document.getElementById('b-company').value,
-                job: document.getElementById('b-job').value,
-                format: document.getElementById('b-format').value,
-                jour: document.getElementById('b-jour').value,
-                sales: document.getElementById('b-sales').value,
-                type: document.getElementById('b-type').value,
-                note: document.getElementById('b-note').value,
-                status: newSlots[idx].booked ? newSlots[idx].info.status : 'scheduled',
-                productionNotes: newSlots[idx].booked ? newSlots[idx].info.productionNotes : '',
-                updatedAt: new Date().toISOString()
-            };
-            if(!info.guest) return alert("Nome ospite obbligatorio.");
-            newSlots[idx] = { time: window.TEMP.slotTime, booked: true, info: info };
-            await updateDoc(doc(window.getCollectionRef(), alloc.id), { slots: newSlots });
-            closeModal();
-        };
-
-        window.deleteFromModal = async () => {
-            if(!confirm("Cancellare la prenotazione?")) return;
-            const alloc = window.DB.allocations.find(a => a.id === window.TEMP.allocId);
-            const newSlots = [...alloc.slots];
-            const idx = newSlots.findIndex(s => s.time === window.TEMP.slotTime);
-            newSlots[idx] = { time: window.TEMP.slotTime, booked: false, info: {} };
-            await updateDoc(doc(window.getCollectionRef(), alloc.id), { slots: newSlots });
-            closeModal();
-        };
-
+        // Settings (Updated for Format Mapping)
         window.openSettings = () => {
             document.getElementById('settings-modal').style.display = 'flex';
             document.getElementById('set-teams').value = (window.SETTINGS.teams || []).join('\n');
             document.getElementById('set-formats').value = (window.SETTINGS.formats || []).join('\n');
             document.getElementById('set-jours').value = (window.SETTINGS.journalists || []).join('\n');
             document.getElementById('set-sales').value = (window.SETTINGS.sales || []).join('\n');
-            renderUsersList();
+            renderFormatMappings();
         };
-        window.closeSettings = () => document.getElementById('settings-modal').style.display = 'none';
-        
+        function renderFormatMappings() {
+            const container = document.getElementById('format-mappings-container');
+            container.innerHTML = '';
+            const formats = window.SETTINGS.formats || [];
+            const teams = window.SETTINGS.teams || [];
+            const mappings = window.SETTINGS.formatMappings || {};
+
+            formats.forEach(fmt => {
+                const div = document.createElement('div');
+                div.className = 'input-group';
+                div.style.marginBottom = '0';
+                
+                let options = `<option value="">-- Redazione di Default (Prenotante) --</option>`;
+                teams.forEach(t => {
+                    const tId = t.trim().toLowerCase().replace(/\s+/g, '');
+                    const isSel = mappings[fmt] === tId ? 'selected' : '';
+                    options += `<option value="${tId}" ${isSel}>${t}</option>`;
+                });
+
+                div.innerHTML = `<label class="input-label">${fmt}</label>
+                                 <select id="map-${fmt.replace(/\s/g, '_')}" data-fmt="${fmt}">${options}</select>`;
+                container.appendChild(div);
+            });
+        }
         window.saveSettings = async () => {
             const teams = document.getElementById('set-teams').value.split('\n').map(s=>s.trim()).filter(s=>s);
             const formats = document.getElementById('set-formats').value.split('\n').map(s=>s.trim()).filter(s=>s);
             const journalists = document.getElementById('set-jours').value.split('\n').map(s=>s.trim()).filter(s=>s);
             const sales = document.getElementById('set-sales').value.split('\n').map(s=>s.trim()).filter(s=>s);
-            await setDoc(doc(window.getSettingsRef(), 'lists'), { teams, formats, journalists, sales });
-            closeSettings();
-        };
-
-        window.openUserManager = () => { document.getElementById('users-modal').style.display = 'flex'; renderUsersList(); renderPermissionsCheckboxes(); };
-        window.closeUserManager = () => document.getElementById('users-modal').style.display = 'none';
-        
-        // --- NEW: Render checkboxes for team permissions ---
-        function renderPermissionsCheckboxes() {
-            const container = document.getElementById('permissions-container');
-            container.innerHTML = '';
-            const teams = window.SETTINGS.teams || [];
             
-            if(teams.length === 0) {
-                container.innerHTML = '<div style="font-size:12px; color:#666;">Nessuna redazione configurata.</div>';
-                return;
-            }
+            // Save Mappings
+            const mappings = {};
+            formats.forEach(fmt => {
+                const sel = document.getElementById(`map-${fmt.replace(/\s/g, '_')}`);
+                if(sel && sel.value) mappings[fmt] = sel.value;
+            });
 
-            teams.forEach(teamName => {
-                const teamId = teamName.trim().toLowerCase().replace(/\s+/g, '');
-                if(teamId === 'admin') return;
-
-                const div = document.createElement('div');
-                div.className = 'checkbox-item';
-                div.innerHTML = `
-                    <input type="checkbox" id="perm-${teamId}" value="${teamId}">
-                    <span>${teamName}</span>
-                `;
-                container.appendChild(div);
+            await setDoc(doc(window.getSettingsRef(), 'lists'), { teams, formats, journalists, sales, formatMappings: mappings });
+            document.getElementById('settings-modal').style.display = 'none';
+        };
+        window.closeSettings = () => document.getElementById('settings-modal').style.display = 'none';
+        
+        function loadSettings() {
+            if(!isFirebaseActive) return;
+            onSnapshot(doc(window.getSettingsRef(), 'lists'), (s) => { 
+                if(s.exists()) { window.SETTINGS = s.data(); if(window.SESSION.role === 'ADMIN') populateTeamSelect(); }
             });
         }
 
-        // --- NEW: Load user data into form on click ---
-        window.loadUserForEdit = (username) => {
-            const user = window.USERS[username];
-            if(!user) return;
-
-            document.getElementById('u-user').value = username;
-            document.getElementById('u-pass').value = user.password; // Show password for easier editing
-            document.getElementById('u-label').value = user.label;
-            document.getElementById('u-color').value = user.color || '#3b82f6';
-
-            // Reset checkboxes
-            document.querySelectorAll('#permissions-container input[type="checkbox"]').forEach(cb => cb.checked = false);
-
-            // Check Allowed Teams
-            if(user.allowedTeams && Array.isArray(user.allowedTeams)) {
-                user.allowedTeams.forEach(tid => {
-                    const cb = document.getElementById(`perm-${tid}`);
-                    if(cb) cb.checked = true;
-                });
-            }
-        };
-
+        // Users & Other
+        window.openUserManager = () => { document.getElementById('users-modal').style.display = 'flex'; renderUsersList(); renderPermissionsCheckboxes(); };
+        window.closeUserManager = () => document.getElementById('users-modal').style.display = 'none';
         function renderUsersList() {
             const c = document.getElementById('users-list-container'); c.innerHTML = '';
             Object.keys(window.USERS).forEach(u => {
                 const user = window.USERS[u];
-                const hasPerms = user.allowedTeams && user.allowedTeams.length > 0;
-                
-                c.innerHTML += `
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid #333; cursor:pointer;" onclick="loadUserForEdit('${u}')" title="Clicca per modificare">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <span style="background:${user.color}; width:12px; height:12px; border-radius:50%;"></span> 
-                            <span style="font-weight:500;">${u}</span>
-                            ${hasPerms ? '<span style="font-size:10px; background:#333; padding:2px 6px; border-radius:4px; color:#aaa;">+PERMS</span>' : ''}
-                        </div>
-                        ${u!=='admin' ? `<button onclick="event.stopPropagation(); deleteUser('${u}')" style="background:none; border:none; color:#666; cursor:pointer;">&times;</button>` : ''}
-                    </div>`;
+                c.innerHTML += `<div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #333; cursor:pointer;" onclick="loadUserForEdit('${u}')">
+                    <div style="display:flex; align-items:center; gap:10px;"><span style="background:${user.color}; width:12px; height:12px; border-radius:50%;"></span> <span>${u}</span></div>
+                    ${u!=='admin' ? `<button onclick="event.stopPropagation(); deleteUser('${u}')" style="background:none; border:none; color:#666;">&times;</button>` : ''}
+                </div>`;
             });
         }
-
+        window.loadUserForEdit = (u) => {
+            const user = window.USERS[u];
+            document.getElementById('u-user').value = u; document.getElementById('u-pass').value = user.password;
+            document.getElementById('u-label').value = user.label; document.getElementById('u-color').value = user.color;
+            document.querySelectorAll('#permissions-container input').forEach(cb => cb.checked = false);
+            (user.allowedTeams||[]).forEach(t => { const el=document.getElementById(`perm-${t}`); if(el) el.checked=true; });
+        };
         window.saveUserConfig = async () => {
             const u = document.getElementById('u-user').value.toLowerCase().replace(/\s/g,'');
             const p = document.getElementById('u-pass').value;
-            const l = document.getElementById('u-label').value;
-            const c = document.getElementById('u-color').value;
-            
-            // Collect Permissions
-            const allowedTeams = [];
-            document.querySelectorAll('#permissions-container input[type="checkbox"]:checked').forEach(cb => {
-                allowedTeams.push(cb.value);
-            });
-
-            if(!u) return alert("Inserire Username");
-            
-            // If editing existing user and password empty, keep old password
-            let finalPass = p;
-            if(!p && window.USERS[u]) finalPass = window.USERS[u].password;
-            if(!finalPass) return alert("Inserire Password");
-
-            window.USERS[u] = { 
-                password: finalPass, 
-                label: l, 
-                color: c, 
-                role: u==='admin'?'ADMIN':'EDITOR',
-                allowedTeams: allowedTeams 
-            };
-            
+            if(!u || !p) return alert("Dati mancanti");
+            const allowed = []; document.querySelectorAll('#permissions-container input:checked').forEach(c=>allowed.push(c.value));
+            window.USERS[u] = { password: p, label: document.getElementById('u-label').value, color: document.getElementById('u-color').value, role: u==='admin'?'ADMIN':'EDITOR', allowedTeams: allowed };
             await setDoc(doc(window.getSettingsRef(), 'users'), window.USERS);
-            renderUsersList();
-            
-            // Clear form
-            document.getElementById('u-user').value=''; 
-            document.getElementById('u-pass').value=''; 
-            document.getElementById('u-label').value='';
-            document.querySelectorAll('#permissions-container input').forEach(i => i.checked=false);
-            
-            alert("Utente salvato con successo!");
+            renderUsersList(); alert("Salvato");
         };
-
-        window.deleteUser = async (u) => {
-            if(confirm("Eliminare utente?")) { delete window.USERS[u]; await setDoc(doc(window.getSettingsRef(), 'users'), window.USERS); renderUsersList(); }
-        };
-
-        function loadSettings() {
-            if(!isFirebaseActive) return;
-            onSnapshot(doc(window.getSettingsRef(), 'lists'), (s) => { 
-                if(s.exists()) {
-                    window.SETTINGS = s.data();
-                    if(window.SESSION.role === 'ADMIN') populateTeamSelect();
-                }
+        window.deleteUser = async (u) => { if(confirm("Eliminare?")) { delete window.USERS[u]; await setDoc(doc(window.getSettingsRef(), 'users'), window.USERS); renderUsersList(); }};
+        function renderPermissionsCheckboxes() {
+            const c = document.getElementById('permissions-container'); c.innerHTML='';
+            (window.SETTINGS.teams||[]).forEach(t => {
+                const tid = t.trim().toLowerCase().replace(/\s/g,''); if(tid==='admin')return;
+                c.innerHTML += `<div class="checkbox-item"><input type="checkbox" id="perm-${tid}" value="${tid}"> <span>${t}</span></div>`;
             });
         }
-        function loadUsers() {
-            if(!isFirebaseActive) return;
-            onSnapshot(doc(window.getSettingsRef(), 'users'), (s) => { 
-                if(s.exists()) window.USERS = s.data(); 
-                else setDoc(doc(window.getSettingsRef(), 'users'), window.USERS);
-            });
-        }
-
-        window.openArchive = () => { switchView('archive-view'); renderArchiveGrid(); };
-        function renderArchiveGrid() {
-            const grid = document.getElementById('grid-archive'); grid.innerHTML = '';
-            const y = getLocalDateString(0); 
-            // Includi date passate OPPURE date archiviate manualmente
-            const arch = window.DB.allocations.filter(a => a.date < y || a.archived).sort((a,b)=>new Date(b.date)-new Date(a.date));
-            if(arch.length===0) grid.innerHTML='<div style="padding:40px;opacity:0.5;grid-column:1/-1;text-align:center;">Archivio vuoto</div>';
-            // Passa 'archive' come tipo per mostrare il tasto Elimina
-            arch.forEach(a => createCard(a, grid, 'archive'));
-        }
-        window.goToDashboard = () => { switchView('dashboard-view'); loadDashboard(); };
-        window.copyToClipboard = (txt) => {
-            const el = document.createElement('textarea'); el.value = txt; document.body.appendChild(el);
-            el.select(); document.execCommand('copy'); document.body.removeChild(el);
-            
-            // Visual feedback
-            const toast = document.createElement('div');
-            toast.innerText = "Copiato negli appunti";
-            toast.style.position = "fixed"; toast.style.bottom="30px"; toast.style.left="50%"; toast.style.transform="translateX(-50%)";
-            toast.style.background = "#fff"; toast.style.color="#000"; toast.style.padding="10px 20px"; toast.style.borderRadius="30px";
-            toast.style.fontWeight="600"; toast.style.zIndex="9999"; toast.style.boxShadow="0 10px 20px rgba(0,0,0,0.3)";
-            document.body.appendChild(toast);
-            setTimeout(()=>document.body.removeChild(toast), 2000);
-        };
-        function populateSelect(id, items, sel) {
-            const el = document.getElementById(id); el.innerHTML = '<option value="">Seleziona...</option>';
-            (items||[]).forEach(i => {
-                const opt = document.createElement('option'); opt.value=i; opt.innerText=i; if(i===sel) opt.selected=true;
-                el.appendChild(opt);
-            });
-        }
+        function loadUsers() { if(isFirebaseActive) onSnapshot(doc(window.getSettingsRef(), 'users'), (s) => { if(s.exists()) window.USERS=s.data(); }); }
         
-        function populateTeamSelect() {
-            const s = document.getElementById('new-team'); 
-            s.innerHTML='';
-            const teamsList = window.SETTINGS.teams || [];
-            if (teamsList.length === 0) {
-                const opt = document.createElement('option'); opt.innerText = "Lista vuota"; s.appendChild(opt);
-                return;
-            }
-            teamsList.forEach(teamName => {
-                const o = document.createElement('option');
-                o.value = teamName.trim().toLowerCase().replace(/\s+/g, '');
-                o.innerText = teamName;
-                s.appendChild(o);
-            });
-        }
+        // Creation & Utils
+        window.createAllocation = async () => {
+            const date = document.getElementById('new-date').value;
+            const start = document.getElementById('start-time').value;
+            const end = document.getElementById('end-time').value;
+            if(!date || !start || !end) return alert("Compilare tutto");
+            let slots = [], [h, m] = start.split(':').map(Number), [eh, em] = end.split(':').map(Number), cur = h*60+m, endM = eh*60+em;
+            while(cur < endM) { slots.push({ time: `${Math.floor(cur/60).toString().padStart(2,'0')}:${(cur%60).toString().padStart(2,'0')}`, booked: false, info: {} }); cur+=30; }
+            await addDoc(window.getCollectionRef(), { date, team: document.getElementById('new-team').value, slots, createdAt: new Date().toISOString() });
+        };
+        window.archiveAlloc = async (id) => updateDoc(doc(window.getCollectionRef(), id), { archived: true });
+        window.deleteAlloc = async (id) => { if(confirm("Eliminare?")) deleteDoc(doc(window.getCollectionRef(), id)); };
+        window.openArchive = () => { switchView('archive-view'); const g=document.getElementById('grid-archive'); g.innerHTML=''; window.DB.allocations.filter(a=>a.date<getLocalDateString(0)||a.archived).forEach(a=>createCard(a,g,'archive')); };
+        window.goToDashboard = () => { switchView('dashboard-view'); loadDashboard(); };
+        window.copyToClipboard = (txt) => { navigator.clipboard.writeText(txt).then(()=>alert("Copiato!")); };
+        function populateSelect(id, items, sel) { const el=document.getElementById(id); el.innerHTML='<option value="">Seleziona...</option>'; (items||[]).forEach(i=>{ const opt=document.createElement('option'); opt.value=i; opt.innerText=i; if(i===sel) opt.selected=true; el.appendChild(opt); }); }
+        function populateTeamSelect() { const s=document.getElementById('new-team'); s.innerHTML=''; (window.SETTINGS.teams||[]).forEach(t=>{ const o=document.createElement('option'); o.value=t.trim().toLowerCase().replace(/\s/g,''); o.innerText=t; s.appendChild(o); }); }
+        
+        // Edit Alloc
+        window.openEditAlloc = (id) => { 
+            window.TEMP.editTargetId = id; const alloc = window.DB.allocations.find(a=>a.id===id); 
+            document.getElementById('edit-alloc-date').value = alloc.date; 
+            const s = document.getElementById('edit-alloc-team'); s.innerHTML=''; 
+            (window.SETTINGS.teams||[]).forEach(t=>{ const o=document.createElement('option'); o.value=t.trim().toLowerCase().replace(/\s/g,''); o.innerText=t; s.appendChild(o); });
+            s.value = alloc.team;
+            document.getElementById('edit-alloc-modal').style.display='flex';
+        };
+        window.saveEditAlloc = async () => { await updateDoc(doc(window.getCollectionRef(), window.TEMP.editTargetId), { date: document.getElementById('edit-alloc-date').value, team: document.getElementById('edit-alloc-team').value }); document.getElementById('edit-alloc-modal').style.display='none'; };
+        
+        // Booking Flow
+        window.openModal = (time) => { window.TEMP.slotTime=time; document.getElementById('booking-modal').style.display='flex'; document.getElementById('modal-time').innerText=time; document.getElementById('btn-delete').style.display='none'; ['b-name','b-company','b-job','b-note'].forEach(id=>document.getElementById(id).value=''); populateSelect('b-format', window.SETTINGS.formats, ''); populateSelect('b-jour', window.SETTINGS.journalists, ''); populateSelect('b-sales', window.SETTINGS.sales, ''); };
+        window.editBooking = (time) => { window.TEMP.slotTime=time; const slot=window.DB.allocations.find(a=>a.id===window.TEMP.allocId).slots.find(s=>s.time===time); document.getElementById('booking-modal').style.display='flex'; document.getElementById('modal-time').innerText=time; document.getElementById('btn-delete').style.display='inline-flex'; document.getElementById('b-name').value=slot.info.guest; document.getElementById('b-company').value=slot.info.company||''; document.getElementById('b-job').value=slot.info.job||''; document.getElementById('b-type').value=slot.info.type||'Presenza'; document.getElementById('b-note').value=slot.info.note||''; populateSelect('b-format', window.SETTINGS.formats, slot.info.format); populateSelect('b-jour', window.SETTINGS.journalists, slot.info.jour); populateSelect('b-sales', window.SETTINGS.sales, slot.info.sales); };
+        window.closeModal = () => document.getElementById('booking-modal').style.display='none';
+        window.saveBooking = async () => {
+            const alloc = window.DB.allocations.find(a=>a.id===window.TEMP.allocId); const slots = [...alloc.slots]; const idx = slots.findIndex(s=>s.time===window.TEMP.slotTime);
+            const info = { guest: document.getElementById('b-name').value, company: document.getElementById('b-company').value, job: document.getElementById('b-job').value, format: document.getElementById('b-format').value, jour: document.getElementById('b-jour').value, sales: document.getElementById('b-sales').value, type: document.getElementById('b-type').value, note: document.getElementById('b-note').value, status: slots[idx].booked?slots[idx].info.status:'scheduled', productionNotes: slots[idx].booked?slots[idx].info.productionNotes:'', updatedAt: new Date().toISOString() };
+            if(!info.guest) return alert("Nome ospite obbligatorio");
+            slots[idx] = { time: window.TEMP.slotTime, booked: true, info }; await updateDoc(doc(window.getCollectionRef(), alloc.id), { slots }); closeModal();
+        };
+        window.deleteFromModal = async () => { if(confirm("Cancellare?")) { const alloc=window.DB.allocations.find(a=>a.id===window.TEMP.allocId); const slots=[...alloc.slots]; const idx=slots.findIndex(s=>s.time===window.TEMP.slotTime); slots[idx]={time:window.TEMP.slotTime, booked:false, info:{}}; await updateDoc(doc(window.getCollectionRef(), alloc.id), { slots }); closeModal(); }};
     </script>
 </body>
 </html>
