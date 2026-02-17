@@ -767,9 +767,13 @@
                 
                 // --- Strings for Copying ---
                 const strNameCompany = `${item.info.guest}${item.info.company ? ' - ' + item.info.company : ''}`;
-                const strJob = item.info.job || '';
+                
+                // MODIFICA QUI: Stringa per il "Sottopancia" (Nome + a capo + Job)
+                const strLower = `${item.info.guest}\n${item.info.job || ''}`;
+                
                 const safeStrName = strNameCompany.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-                const safeStrJob = strJob.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                // Importante: escape di \n per passarlo correttamente alla funzione onclick
+                const safeStrLower = strLower.replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, "\\n");
 
                 // Redazione Lookup Logic
                 const mappedTeamId = (window.SETTINGS.formatMappings && window.SETTINGS.formatMappings[formatName]) ? window.SETTINGS.formatMappings[formatName] : item.team;
@@ -796,7 +800,7 @@
                     <div style="margin-top:16px; border-top:1px solid rgba(255,255,255,0.1); padding-top:12px;">
                         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:16px;">
                             <div class="copy-box" onclick="copyToClipboard('${safeStrName}')" title="Copia: ${safeStrName}">📋 ${strNameCompany}</div>
-                            <div class="copy-box" onclick="copyToClipboard('${safeStrJob}')" title="Copia: ${safeStrJob}">📋 ${strJob || 'Nessun Job Title'}</div>
+                            <div class="copy-box" style="white-space: normal; line-height: 1.4;" onclick="copyToClipboard('${safeStrLower}')" title="Copia Sottopancia">📋 ${item.info.guest}<br><span style="font-size:0.9em; opacity:0.7;">${item.info.job || ''}</span></div>
                         </div>
                         <div style="display:flex; justify-content:flex-end; gap:8px;">
                             <button class="btn btn-danger" style="height:28px; font-size:10px;" onclick="updateStatus('${item.allocId}', '${item.time}', 'editing_queue')">Coda</button>
