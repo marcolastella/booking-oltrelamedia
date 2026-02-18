@@ -727,7 +727,8 @@
             const today = getLocalDateString(0);
 
             window.DB.allocations.forEach(alloc => {
-                if (window.SESSION.role !== 'ADMIN' && alloc.team !== window.SESSION.user && alloc.id !== 'manual_jobs') return;
+                // MODIFICATION: Removed the filter so everyone sees everything
+                // if (window.SESSION.role !== 'ADMIN' && alloc.team !== window.SESSION.user && alloc.id !== 'manual_jobs') return;
                 const isManual = alloc.id === 'manual_jobs';
                 const isPast = alloc.date < today;
 
