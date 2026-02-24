@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regia Monitor - Live Schedule</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-app: #050505;
+            --text-main: #ffffff;
+            --text-secondary: #a1a1aa;
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --success: #10b981;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background-color: var(--bg-app);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            overflow: hidden; /* Evita lo scroll orizzontale */
+            background-image: radial-gradient(circle at 50% -20%, #1e2030 0%, #050505 60%);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER */
+        header {
+            padding: 30px 40px;
+            border-bottom: 2px solid var(--border-glass);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+        
+        .header-title { font-size: 38px; font-weight: 800; letter-spacing: -1px; }
+        .header-date { font-size: 24px; color: var(--text-secondary); font-weight: 600; }
+        .live-indicator { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 800; color: #ef4444; letter-spacing: 2px; text-transform: uppercase; }
+        .dot { width: 16px; height: 16px; background: #ef4444; border-radius: 50%; animation: pulse 2s infinite; box-shadow: 0 0 15px #ef4444; }
+
+        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
+
+        /* LIST CONTENT */
+        .list-container {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .list-header {
+            display: grid;
+            grid-template-columns: 120px 2.5fr 1.5fr 1fr 150px;
+            gap: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+            color: var(--text-secondary);
+            font-size: 18px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .note-item {
+            display: grid;
+            grid-template-columns: 120px 2.5fr 1.5fr 1fr 150px;
+            gap: 30px;
+            padding: 30px 0;
+            border-bottom: 1px solid var(--border-glass);
+            align-items: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .time-col { font-family: 'JetBrains Mono', monospace; font-size: 32px; font-weight: 700; color: #3b82f6; text-shadow: 0 0 20px rgba(59, 130, 246, 0.4); }
+        
+        .guest-name { font-size: 32px; font-weight: 800; line-height: 1.2; }
+        .company-name { font-size: 22px; color: var(--text-secondary); margin-top: 8px; }
+        .prod-note { font-size: 20px; color: var(--success); margin-top: 12px; border-left: 4px solid var(--success); padding-left: 12px; background: rgba(16, 185, 129, 0.05); padding-top: 4px; padding-bottom: 4px; border-radius: 0 8px 8px 0; font-style: italic; }
+        
+        .format-name { font-size: 24px; font-weight: 600; }
+        .team-tag { font-size: 16px; font-weight: 800; margin-top: 8px; display: inline-block; padding: 4px 12px; border-radius: 8px; border: 2px solid currentColor; text-transform: uppercase; }
+        
+        .jour-name { font-size: 24px; color: #ddd; }
+        
+        .setup-tag { font-size: 20px; text-transform: uppercase; text-align: center; background: #222; padding: 10px; border-radius: 8px; font-weight: 800; letter-spacing: 1px; }
+        .setup-remoto { border: 2px solid #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
+        .setup-presenza { border: 2px solid #8b5cf6; color: #8b5cf6; background: rgba(139, 92, 246, 0.1); }
+
+        .empty-state { text-align: center; padding: 100px; font-size: 32px; color: #555; font-weight: 600; }
+
+        /* Nascondi scrollbar per un look più pulito sullo schermo TV */
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <div class="header-title">REGIA STUDIO</div>
+            <div class="header-date" id="display-date">Caricamento...</div>
+        </div>
+        <div class="live-indicator">
+            <div class="dot"></div> ON AIR
+        </div>
+    </header>
+
+    <div class="list-container">
+        <div class="list-header">
+            <div>Orario</div>
+            <div>Ospite / Azienda</div>
+            <div>Format / Redazione</div>
+            <div>Giornalista</div>
+            <div style="text-align: center;">Setup</div>
+        </div>
+        <div id="monitor-list">
+            <div class="empty-state">Inizializzazione sistema...</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Configurazione Firebase (Invariata)
+        const manualConfig = { apiKey: "AIzaSyAh6TX5OhGoGSYLnK2fgxv5qqkQStL81f4", authDomain: "booking-redazioni-cb450.firebaseapp.com", projectId: "booking-redazioni-cb450", storageBucket: "booking-redazioni-cb450.firebasestorage.app", messagingSenderId: "201284623978", appId: "1:201284623978:web:0f7b3c93a2993da9883413", measurementId: "G-CEY9K09ZQY" };
+        let firebaseConfig = manualConfig, db, auth;
+
+        // Gestione path dinamici se passati via variabili globali dall'app principale
+        let getCollectionRef, getSettingsRef;
+
+        try {
+            if (typeof __firebase_config !== 'undefined') {
+                firebaseConfig = JSON.parse(__firebase_config);
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                getCollectionRef = () => collection(db, 'artifacts', appId, 'public', 'data', 'allocations');
+                getSettingsRef = () => collection(db, 'artifacts', appId, 'public', 'data', 'settings');
+            } else {
+                getCollectionRef = () => collection(db, 'allocations');
+                getSettingsRef = () => collection(db, 'settings');
+            }
+
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+
+            // Accesso Anonimo automatico per schermi di visualizzazione
+            signInAnonymously(auth);
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    startRealtimeListeners();
+                }
+            });
+        } catch (e) { 
+            console.error("Init Error", e);
+            document.getElementById('monitor-list').innerHTML = `<div class="empty-state" style="color:#ef4444;">Errore di connessione al database.</div>`;
+        }
+
+        // Stato locale
+        const STATE = {
+            allocations: [],
+            settings: { formatMappings: {} },
+            users: {}
+        };
+
+        // Funzione Data
+        function getLocalDateString() {
+            const d = new Date();
+            const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome', year: 'numeric', month: '2-digit', day: '2-digit' });
+            return fmt.format(d);
+        }
+
+        function updateHeaderDate() {
+            const d = new Date();
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            let testata = d.toLocaleDateString('it-IT', options);
+            document.getElementById('display-date').innerText = testata.charAt(0).toUpperCase() + testata.slice(1);
+        }
+
+        // Listeners
+        function startRealtimeListeners() {
+            // 1. Ascolta Allocations
+            onSnapshot(getCollectionRef(), (snapshot) => {
+                const loaded = []; 
+                snapshot.forEach((doc) => loaded.push({ id: doc.id, ...doc.data() }));
+                STATE.allocations = loaded;
+                renderMonitor();
+            });
+
+            // 2. Ascolta Settings (per i mappings)
+            onSnapshot(doc(getSettingsRef(), 'lists'), (s) => { 
+                if(s.exists()) STATE.settings = s.data(); 
+                renderMonitor();
+            });
+
+            // 3. Ascolta Utenti (per colori e nomi redazioni)
+            onSnapshot(doc(getSettingsRef(), 'users'), (s) => { 
+                if(s.exists()) STATE.users = s.data(); 
+                renderMonitor();
+            });
+            
+            // Aggiorna la data in testata ogni minuto (se scocca la mezzanotte)
+            updateHeaderDate();
+            setInterval(() => {
+                updateHeaderDate();
+                renderMonitor(); // Forza il re-render se cambia giorno
+            }, 60000); 
+        }
+
+        // Render principale
+        function renderMonitor() {
+            const container = document.getElementById('monitor-list');
+            const todayStr = getLocalDateString(); 
+            
+            // Filtra solo oggi
+            const todayAllocations = STATE.allocations.filter(a => a.date === todayStr && !a.archived);
+            let allSlots = [];
+
+            todayAllocations.forEach(alloc => {
+                alloc.slots.forEach(slot => {
+                    // Mostra solo prenotati e che NON sono ancora in editing (scheduled o null)
+                    if (slot.booked && (!slot.info.status || slot.info.status === 'scheduled')) {
+                        allSlots.push({ ...slot, allocId: alloc.id, team: alloc.team });
+                    }
+                });
+            });
+
+            // Ordina cronologicamente
+            allSlots.sort((a, b) => a.time.localeCompare(b.time));
+
+            if (allSlots.length === 0) { 
+                container.innerHTML = '<div class="empty-state">Nessuna registrazione in programma al momento.</div>'; 
+                return; 
+            }
+
+            container.innerHTML = '';
+
+            allSlots.forEach(item => {
+                // Recupera Logica Redazione
+                const formatName = item.info.format || '-';
+                const mappedTeamId = (STATE.settings.formatMappings && STATE.settings.formatMappings[formatName]) 
+                                        ? STATE.settings.formatMappings[formatName] 
+                                        : item.team;
+                const mappedTeamData = STATE.users[mappedTeamId] || { label: mappedTeamId, color: '#666' };
+
+                // Stile del badge Setup
+                const setupType = (item.info.type || 'Presenza').toLowerCase();
+                const setupClass = setupType === 'remoto' ? 'setup-remoto' : 'setup-presenza';
+
+                const div = document.createElement('div');
+                div.className = 'note-item';
+                div.innerHTML = `
+                    <div class="time-col">${item.time}</div>
+                    
+                    <div>
+                        <div class="guest-name">${item.info.guest}</div>
+                        ${item.info.company ? `<div class="company-name">${item.info.company}</div>` : ''}
+                        ${item.info.productionNotes ? `<div class="prod-note">Nota: ${item.info.productionNotes}</div>` : ''}
+                    </div>
+                    
+                    <div>
+                        <div class="format-name">${formatName}</div>
+                        <div class="team-tag" style="color:${mappedTeamData.color};">${mappedTeamData.label}</div>
+                    </div>
+                    
+                    <div class="jour-name">${item.info.jour || '-'}</div>
+                    
+                    <div>
+                        <div class="setup-tag ${setupClass}">${item.info.type || 'Presenza'}</div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>
